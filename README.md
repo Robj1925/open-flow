@@ -114,8 +114,10 @@ hotkey (CGEventTap) ─► AudioCaptureEngine (16 kHz mono)
                             ▼
                    TranscriptPipeline
                    ├─ HallucinationFilter (energy gate + no-speech prob + artifact list)
+                   ├─ LLMCleanerStage     (Apple Intelligence, on-device; runs only when
+                   │                       the transcript contains disfluencies)
                    └─ DictionaryReplacer  (word-boundary custom vocabulary)
-                            │                └─ v2: LLM cleanup stage slots in here
+                            │
                             ▼
                    TextInjector (clipboard snapshot → ⌘V → restore, or keystroke typing)
 ```
