@@ -2,6 +2,12 @@
 
 Open-source, local-only voice dictation for macOS. Hold a key, speak, release — your words appear wherever your cursor is. An alternative to Wispr Flow with no subscription, no cloud, and no audio ever leaving your Mac.
 
+<p align="center">
+  <img src="docs/images/demo.gif" alt="OpenFlow dictation demo: hold the key, speak, and the transcribed sentence appears in the focused text field" width="820">
+</p>
+
+<p align="center"><sub>Hold the key, speak, release. The transcript lands right where your cursor is.</sub></p>
+
 ## Features
 
 - **System-wide dictation**: works in any app — editors, browsers, chat, terminals
@@ -13,6 +19,20 @@ Open-source, local-only voice dictation for macOS. Hold a key, speak, release �
 - **Hallucination filtering**: silence never injects "Thank you." into your editor
 - **Local history**: searchable transcript log in SQLite, on your disk only
 - **Clipboard-safe**: pastes via a transient clipboard entry (ignored by clipboard managers) and restores what you had copied
+
+## Screenshots
+
+<p align="center">
+  <img src="docs/images/menubar-dropdown.png" alt="OpenFlow menu bar dropdown showing the active engine and dictation status" width="340">
+</p>
+
+<p align="center"><sub>Lives in your menu bar. It shows the active engine and whether it is ready, with History and Settings a click away.</sub></p>
+
+<p align="center">
+  <img src="docs/images/settings-general.png" alt="OpenFlow General settings: hotkey, activation, language, on-device cleanup, and output" width="620">
+</p>
+
+<p align="center"><sub>Settings: choose your hotkey and activation style, pick a language, toggle on-device cleanup, and set how text is inserted.</sub></p>
 
 ## Requirements
 
@@ -32,6 +52,17 @@ xattr -dr com.apple.quarantine /Applications/OpenFlow.app
 
 Onboarding then walks you through Microphone + Accessibility permissions and the model download. Hold `fn`, speak, release.
 
+<table>
+  <tr>
+    <td width="25%" valign="top"><img src="docs/images/onboarding-welcome.png" alt="Welcome to OpenFlow" width="100%"></td>
+    <td width="25%" valign="top"><img src="docs/images/onboarding-microphone-prompt.png" alt="Microphone permission: audio never leaves your machine" width="100%"></td>
+    <td width="25%" valign="top"><img src="docs/images/onboarding-model.png" alt="Speech model download, Parakeet TDT v2" width="100%"></td>
+    <td width="25%" valign="top"><img src="docs/images/onboarding-try-it.png" alt="Try it: hold the key and speak into the field" width="100%"></td>
+  </tr>
+</table>
+
+<p align="center"><sub>The first-run flow takes about two minutes: welcome, microphone access (audio stays on your Mac), the one-time model download, then a field to try it live.</sub></p>
+
 ## Build & run
 
 ```sh
@@ -50,6 +81,12 @@ On first launch, onboarding walks through the required permissions:
 | Input Monitoring | only if macOS refuses the event tap with Accessibility alone |
 
 > **Ad-hoc signing note:** without a Developer ID, macOS ties permission grants to the binary's signature — after rebuilding you may need to re-grant Accessibility (toggle OpenFlow off/on in System Settings). Set `CODESIGN_ID="Developer ID Application: …"` when running `make app` if you have a signing identity.
+
+<p align="center">
+  <img src="docs/images/accessibility-permission.png" alt="System Settings, Privacy and Security, Accessibility, with OpenFlow enabled" width="460">
+</p>
+
+<p align="center"><sub>System Settings, Privacy &amp; Security, Accessibility. This grant lets OpenFlow watch for the hotkey and paste into the focused app.</sub></p>
 
 If you use `fn` as the hotkey, set System Settings → Keyboard → *Press 🌐 key to* → **Do Nothing** so the emoji picker stays out of the way.
 
