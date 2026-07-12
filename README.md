@@ -14,7 +14,8 @@ Open-source, local-only voice dictation for macOS. Hold a key, speak, release �
 - **Hold or toggle**: hold `fn` (default) and release to insert, or quick-tap to toggle hands-free; `Esc` cancels
 - **Two local engines**, switchable in Settings:
   - **Parakeet TDT v2** (default) — fastest, best English accuracy, via [FluidAudio](https://github.com/FluidInference/FluidAudio)
-  - **Whisper** (large-v3-turbo / small.en / base.en) — ~100 languages, via [WhisperKit](https://github.com/argmaxinc/argmax-oss-swift)
+  - **Whisper**: choose this for languages other than English. The multilingual **large-v3-turbo** covers ~100 languages, while **small.en** and **base.en** are English only. Via [WhisperKit](https://github.com/argmaxinc/argmax-oss-swift).
+  - **Other languages**: you have to switch to the **Whisper large-v3-turbo** model (Models tab), then set your language in Settings. OpenFlow dictates one selected language at a time (no auto-detect yet). Parakeet and the `.en` presets are English only.
 - **Custom dictionary & snippets**: teach it "cube cuddle" → `kubectl`, or expand spoken triggers into whole blocks
 - **Hallucination filtering**: silence never injects "Thank you." into your editor
 - **Local history**: searchable transcript log in SQLite, on your disk only
