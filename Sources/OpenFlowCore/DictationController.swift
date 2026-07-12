@@ -232,7 +232,8 @@ public final class DictationController: ObservableObject {
             ),
             DictionaryReplacer(rules: dictionary.replacementRules()),
         ])
-        isCleaningUp = settings.cleanupEnabled && cleaner.isAvailable && !result.text.isEmpty
+        isCleaningUp = settings.cleanupEnabled && cleaner.isAvailable
+            && LLMCleanerStage.needsCleanup(result.text)
         let text = await pipeline.run(result.text, context: context)
         isCleaningUp = false
 

@@ -61,7 +61,7 @@ private struct GeneralSettingsView: View {
             } header: {
                 Text("Cleanup")
             } footer: {
-                Text("Removes filler words and false starts and fixes punctuation, on-device. Adds a fraction of a second per dictation.")
+                Text("Removes filler words and false starts, on-device. Runs only when a transcript actually contains disfluencies, and never delays a dictation more than a few seconds — if the model is slow, the raw transcript is inserted instead.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }

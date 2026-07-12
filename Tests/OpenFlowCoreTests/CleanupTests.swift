@@ -58,4 +58,36 @@ private final class StubCleaner: TextCleaner, @unchecked Sendable {
         )
         #expect(await stage.process("", context: context) == "")
     }
+
+    @Test func skipsCleanTranscriptsEntirely() async {
+        let stage = LLMCleanerStage(
+            cleaner: StubCleaner(available: true) { _ in "should not run" },
+            enabled: true,
+            vocabulary: nil
+        )
+        let clean = "Send the quarterly report to Sarah before Friday."
+        #expect(await stage.process(clean, context: context) == clean)
+    }
+}
+
+@Suite struct NeedsCleanupHeuristicTests {
+    @Test func detectsFillers() {
+        #expect(LLMCleanerStage.needsCleanup("um send the report"))
+        #expect(LLMCleanerStage.needsCleanup("So, uh, let's start over."))
+        #expect(LLMCleanerStage.needsCleanup("Ship it Friday, no wait, Monday."))
+        #expect(LLMCleanerStage.needsCleanup("I mean the second draft, you know."))
+    }
+
+    @Test func detectsStutters() {
+        #expect(LLMCleanerStage.needsCleanup("refactor the the login page"))
+        #expect(LLMCleanerStage.needsCleanup("it is is kind of broken"))
+    }
+
+    @Test func passesCleanText() {
+        #expect(!LLMCleanerStage.needsCleanup("Send the quarterly report to Sarah before Friday."))
+        #expect(!LLMCleanerStage.needsCleanup("Run kubectl apply to deploy the new build."))
+        // Words merely containing filler substrings must not trigger.
+        #expect(!LLMCleanerStage.needsCleanup("The drummer hummed a tune."))
+        #expect(!LLMCleanerStage.needsCleanup("I like this design a lot."))
+    }
 }

@@ -31,10 +31,10 @@ public final class AppleFoundationCleaner: TextCleaner, @unchecked Sendable {
     - Return ONLY the cleaned transcript, with no preamble, quotes, or notes.
     """
 
-    /// Cleanup must never stall a dictation: past this deadline the raw
-    /// transcript is injected instead (warm calls run 0.5–1.5 s; only a cold
-    /// model load ever approaches this).
-    public var timeout: TimeInterval = 4
+    /// Upper bound on how long cleanup may stall a dictation; past the
+    /// deadline the raw transcript is injected instead. The effective per-call
+    /// deadline scales with input length (short dictations wait ~2 s max).
+    public var maxTimeout: TimeInterval = 5
 
     /// A pre-warmed session ready for the next cleanup. Sessions accumulate
     /// transcript history, so each is used once and replaced. Typed as
@@ -104,9 +104,11 @@ public final class AppleFoundationCleaner: TextCleaner, @unchecked Sendable {
                     group.addTask {
                         try await session.respond(to: prompt, options: options).content
                     }
-                    group.addTask { [timeout] in
-                        try await Task.sleep(nanoseconds: UInt64(timeout * 1_000_000_000))
-                        return nil // timeout wins → caller falls back to raw
+                    let words = text.split(separator: " ").count
+                    let deadline = min(maxTimeout, 2.0 + Double(words) * 0.03)
+                    group.addTask {
+                        try await Task.sleep(nanoseconds: UInt64(deadline * 1_000_000_000))
+                        return nil // deadline wins → caller falls back to raw
                     }
                     defer { group.cancelAll() }
                     return try await group.next() ?? nil
