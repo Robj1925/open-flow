@@ -91,9 +91,12 @@ struct OnboardingView: View {
         switch step {
         case .welcome:
             VStack(spacing: 16) {
-                Image(systemName: "waveform.circle.fill")
-                    .font(.system(size: 64))
-                    .foregroundStyle(.tint)
+                // The real app icon, straight from the bundle — never drifts
+                // from the logo shown in Finder/System Settings.
+                Image(nsImage: NSApp.applicationIconImage)
+                    .resizable()
+                    .interpolation(.high)
+                    .frame(width: 96, height: 96)
                 Text("Welcome to OpenFlow")
                     .font(.largeTitle.bold())
                 Text("Hold a key, speak, release — your words appear wherever your cursor is. Everything runs on this Mac; audio never leaves your machine.")
