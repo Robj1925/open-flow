@@ -1,0 +1,7 @@
+.build/
+.swiftpm/
+*.xcodeproj
+dist/
+Configs/Signing.local.xcconfig
+.DS_Store
+docs/research/
