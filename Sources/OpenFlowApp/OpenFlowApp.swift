@@ -53,10 +53,25 @@ private struct MenuBarLabel: View {
     }
 }
 
+/// Accessory (menu-bar) apps aren't granted activation when they open a
+/// window, so new windows land BEHIND the frontmost app. Activate, then order
+/// the window front once it exists — orderFrontRegardless works even when
+/// macOS denies the activation request.
+@MainActor
+private func focusWindow(matching predicate: @escaping (NSWindow) -> Bool) {
+    NSApp.activate(ignoringOtherApps: true)
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.08) {
+        guard let window = NSApp.windows.first(where: predicate) else { return }
+        window.makeKeyAndOrderFront(nil)
+        window.orderFrontRegardless()
+    }
+}
+
 private struct MenuContentView: View {
     @ObservedObject private var controller = AppState.shared.controller
     @ObservedObject private var settings = AppState.shared.settings
     @Environment(\.openWindow) private var openWindow
+    @Environment(\.openSettings) private var openSettings
 
     var body: some View {
         Text(statusLine)
@@ -71,11 +86,15 @@ private struct MenuContentView: View {
 
         Button("History…") {
             openWindow(id: "history")
-            NSApp.activate(ignoringOtherApps: true)
+            focusWindow { $0.title == "OpenFlow History" }
         }
 
-        SettingsLink {
-            Text("Settings…")
+        Button("Settings…") {
+            openSettings()
+            focusWindow {
+                $0.identifier?.rawValue.contains("Settings") == true
+                    || $0.title.localizedCaseInsensitiveContains("settings")
+            }
         }
         .keyboardShortcut(",")
 
