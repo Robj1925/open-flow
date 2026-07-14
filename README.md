@@ -3,6 +3,14 @@
 Open-source, local-only voice dictation for macOS. Hold a key, speak, release — your words appear wherever your cursor is. An alternative to Wispr Flow with no subscription, no cloud, and no audio ever leaving your Mac.
 
 <p align="center">
+  <a href="https://robj1925.github.io/open-flow/"><b>Website</b></a>
+  &nbsp;&middot;&nbsp;
+  <a href="https://github.com/Robj1925/open-flow/releases/latest/download/OpenFlow.zip"><b>Download for Mac</b></a>
+  &nbsp;&middot;&nbsp;
+  <a href="https://github.com/Robj1925/open-flow/releases/latest"><b>Releases</b></a>
+</p>
+
+<p align="center">
   <img src="docs/images/demo.gif" alt="OpenFlow dictation demo: hold the key, speak, and the transcribed sentence appears in the focused text field" width="820">
 </p>
 
