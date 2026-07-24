@@ -1,12 +1,13 @@
 import FluidAudio
 import Foundation
 
-/// Parakeet TDT 0.6b v2 (English-only) via FluidAudio's CoreML runtime.
-/// Fastest engine, near-zero silence hallucination, no vocabulary biasing —
-/// dictionary correctness comes from the `DictionaryReplacer` post-pass.
+/// Parakeet TDT 0.6b v3 (multilingual: English plus 24 European languages) via
+/// FluidAudio's CoreML runtime. Fastest engine, near-zero silence hallucination,
+/// no vocabulary biasing. Dictionary correctness comes from the
+/// `DictionaryReplacer` post-pass.
 public final class FluidAudioEngine: TranscriptionEngine {
     public let id = "parakeet"
-    public let displayName = "Parakeet TDT v2"
+    public let displayName = "Parakeet TDT v3"
 
     private var manager: AsrManager?
 
@@ -16,7 +17,7 @@ public final class FluidAudioEngine: TranscriptionEngine {
 
     public func prepare(progress: @escaping @Sendable (Double) -> Void) async throws {
         guard manager == nil else { return }
-        let models = try await AsrModels.downloadAndLoad(version: .v2) { update in
+        let models = try await AsrModels.downloadAndLoad(version: .v3) { update in
             progress(update.fractionCompleted)
         }
         let asr = AsrManager(config: .default)
@@ -50,12 +51,12 @@ public final class FluidAudioEngine: TranscriptionEngine {
         manager = nil
     }
 
-    /// Where FluidAudio caches the Parakeet v2 CoreML weights.
+    /// Where FluidAudio caches the Parakeet v3 CoreML weights.
     public static var modelsDirectory: URL {
-        AsrModels.defaultCacheDirectory(for: .v2)
+        AsrModels.defaultCacheDirectory(for: .v3)
     }
 
     public static var isDownloaded: Bool {
-        AsrModels.modelsExist(at: modelsDirectory, version: .v2)
+        AsrModels.modelsExist(at: modelsDirectory, version: .v3)
     }
 }

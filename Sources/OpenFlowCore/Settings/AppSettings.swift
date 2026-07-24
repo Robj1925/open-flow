@@ -21,15 +21,22 @@ public final class AppSettings: ObservableObject {
         static let cleanupEnabled = "cleanupEnabled"
     }
 
-    private init() {}
+    private init() {
+        // Retired preset ids (Parakeet v2, the English-only Whisper builds) fold
+        // into the current default so the Models tab always has a valid selection.
+        if ModelCatalog.preset(id: modelPresetID) == nil {
+            modelPresetID = ModelCatalog.parakeetV3.id
+            defaults.set(modelPresetID, forKey: Key.modelPreset)
+        }
+    }
 
     /// Selected model preset id from `ModelCatalog` (implies the engine).
-    @Published public var modelPresetID: String = UserDefaults.standard.string(forKey: Key.modelPreset) ?? ModelCatalog.parakeetV2.id {
+    @Published public var modelPresetID: String = UserDefaults.standard.string(forKey: Key.modelPreset) ?? ModelCatalog.parakeetV3.id {
         didSet { defaults.set(modelPresetID, forKey: Key.modelPreset) }
     }
 
     public var modelPreset: ModelPreset {
-        ModelCatalog.preset(id: modelPresetID) ?? ModelCatalog.parakeetV2
+        ModelCatalog.preset(id: modelPresetID) ?? ModelCatalog.parakeetV3
     }
 
     @Published public var hotkey: DictationHotkey = DictationHotkey(
@@ -44,7 +51,8 @@ public final class AppSettings: ObservableObject {
         didSet { defaults.set(activationMode.rawValue, forKey: Key.activationMode) }
     }
 
-    /// ISO 639-1 dictation language. Parakeet v2 supports "en" only.
+    /// ISO 639-1 dictation language. Parakeet v3 covers English plus 24 European
+    /// languages; Whisper Large v3 Turbo covers everything else.
     @Published public var language: String = UserDefaults.standard.string(forKey: Key.language) ?? "en" {
         didSet { defaults.set(language, forKey: Key.language) }
     }

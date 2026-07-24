@@ -140,7 +140,7 @@ case "models":
 
 case "record":
     let seconds = TimeInterval(arguments.dropFirst().first ?? "8") ?? 8
-    let presetID = arguments.dropFirst(2).first ?? ModelCatalog.parakeetV2.id
+    let presetID = arguments.dropFirst(2).first ?? ModelCatalog.parakeetV3.id
     guard let preset = ModelCatalog.preset(id: presetID) else {
         print("Unknown preset \(presetID). Run `openflow-cli models`.")
         exit(1)
@@ -155,12 +155,12 @@ case "file":
         print("Usage: openflow-cli file <audio-file> [preset-id|both]")
         exit(1)
     }
-    let presetArg = arguments.dropFirst(2).first ?? ModelCatalog.parakeetV2.id
+    let presetArg = arguments.dropFirst(2).first ?? ModelCatalog.parakeetV3.id
     let capture = try loadAudioFile(path)
     print(String(format: "Loaded %.1fs of audio (peak RMS %.4f)", capture.duration, capture.peakRMS))
     let presets: [ModelPreset]
     if presetArg == "both" {
-        presets = [ModelCatalog.parakeetV2, ModelCatalog.whisperBaseEn]
+        presets = [ModelCatalog.parakeetV3, ModelCatalog.whisperLargeTurbo]
     } else if let preset = ModelCatalog.preset(id: presetArg) {
         presets = [preset]
     } else {
@@ -176,7 +176,7 @@ case "file":
 case "compare":
     let seconds = TimeInterval(arguments.dropFirst().first ?? "8") ?? 8
     await ensureMicAccess()
-    let parakeet = ModelCatalog.parakeetV2
+    let parakeet = ModelCatalog.parakeetV3
     let whisper = ModelCatalog.whisperLargeTurbo
     let parakeetEngine = try await prepare(parakeet)
     let whisperEngine = try await prepare(whisper)

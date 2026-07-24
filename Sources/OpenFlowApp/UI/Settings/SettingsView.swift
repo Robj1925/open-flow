@@ -47,8 +47,9 @@ private struct GeneralSettingsView: View {
                         Text(language.name).tag(language.code)
                     }
                 }
-                if settings.language != "en", settings.modelPreset.engine == .parakeet {
-                    Label("Parakeet is English-only. Pick a Whisper model in the Models tab for \(languageName(settings.language)).",
+                if settings.modelPreset.engine == .parakeet,
+                   !ModelCatalog.parakeetLanguages.contains(settings.language) {
+                    Label("Parakeet doesn't cover \(languageName(settings.language)). Pick Whisper Large v3 Turbo in the Models tab for this language.",
                           systemImage: "exclamationmark.triangle")
                         .font(.callout)
                         .foregroundStyle(.orange)

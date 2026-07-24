@@ -16,11 +16,11 @@ public struct ModelPreset: Identifiable, Equatable, Sendable {
 /// Parakeet weights are managed by FluidAudio in its own cache; Whisper weights
 /// live under Application Support/OpenFlow/Models.
 public enum ModelCatalog {
-    public static let parakeetV2 = ModelPreset(
-        id: "parakeet-tdt-v2",
+    public static let parakeetV3 = ModelPreset(
+        id: "parakeet-tdt-v3",
         engine: .parakeet,
-        displayName: "Parakeet TDT v2",
-        detail: "Fastest, best English accuracy. English only.",
+        displayName: "Parakeet TDT v3",
+        detail: "Fastest engine. English plus 24 European languages.",
         whisperVariant: nil,
         approxSize: "~600 MB"
     )
@@ -28,32 +28,23 @@ public enum ModelCatalog {
         id: "whisper-large-v3-turbo",
         engine: .whisper,
         displayName: "Whisper Large v3 Turbo",
-        detail: "Best multilingual accuracy (quantized).",
+        detail: "Broadest coverage (~100 languages), quantized. Use for languages Parakeet does not cover.",
         whisperVariant: "openai_whisper-large-v3-v20240930_626MB",
         approxSize: "~626 MB"
     )
-    public static let whisperSmallEn = ModelPreset(
-        id: "whisper-small-en",
-        engine: .whisper,
-        displayName: "Whisper Small (English)",
-        detail: "Balanced speed and accuracy. English only.",
-        whisperVariant: "openai_whisper-small.en",
-        approxSize: "~400 MB"
-    )
-    public static let whisperBaseEn = ModelPreset(
-        id: "whisper-base-en",
-        engine: .whisper,
-        displayName: "Whisper Base (English)",
-        detail: "Smallest and fastest Whisper. English only.",
-        whisperVariant: "openai_whisper-base.en",
-        approxSize: "~145 MB"
-    )
 
-    public static let all: [ModelPreset] = [parakeetV2, whisperLargeTurbo, whisperSmallEn, whisperBaseEn]
+    public static let all: [ModelPreset] = [parakeetV3, whisperLargeTurbo]
 
     public static func preset(id: String) -> ModelPreset? {
         all.first { $0.id == id }
     }
+
+    /// ISO 639-1 codes Parakeet TDT v3 transcribes: English plus 24 European
+    /// languages. Anything outside this set needs the Whisper engine.
+    public static let parakeetLanguages: Set<String> = [
+        "bg", "hr", "cs", "da", "nl", "en", "et", "fi", "fr", "de", "el", "hu",
+        "it", "lv", "lt", "mt", "pl", "pt", "ro", "sk", "sl", "es", "sv", "ru", "uk",
+    ]
 }
 
 public final class ModelManager {
@@ -75,7 +66,7 @@ public final class ModelManager {
             return FluidAudioEngine()
         case .whisper:
             return WhisperKitEngine(
-                modelVariant: preset.whisperVariant ?? "openai_whisper-base.en",
+                modelVariant: preset.whisperVariant ?? "openai_whisper-large-v3-v20240930_626MB",
                 downloadBase: whisperDownloadBase
             )
         }

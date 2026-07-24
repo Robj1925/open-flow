@@ -21,9 +21,9 @@ Open-source, local-only voice dictation for macOS. Hold a key, speak, release �
 - **System-wide dictation**: works in any app — editors, browsers, chat, terminals
 - **Hold or toggle**: hold `fn` (default) and release to insert, or quick-tap to toggle hands-free; `Esc` cancels
 - **Two local engines**, switchable in Settings:
-  - **Parakeet TDT v2** (default) — fastest, best English accuracy, via [FluidAudio](https://github.com/FluidInference/FluidAudio)
-  - **Whisper**: choose this for languages other than English. The multilingual **large-v3-turbo** covers ~100 languages, while **small.en** and **base.en** are English only. Via [WhisperKit](https://github.com/argmaxinc/argmax-oss-swift).
-  - **Other languages**: you have to switch to the **Whisper large-v3-turbo** model (Models tab), then set your language in Settings. OpenFlow dictates one selected language at a time (no auto-detect yet). Parakeet and the `.en` presets are English only.
+  - **Parakeet TDT v3** (default): the fastest engine, best English accuracy, and it also covers 24 European languages. Via [FluidAudio](https://github.com/FluidInference/FluidAudio).
+  - **Whisper Large v3 Turbo**: the broad multilingual fallback, roughly 100 languages including Chinese, Japanese, Korean, Arabic, and Hindi. Via [WhisperKit](https://github.com/argmaxinc/argmax-oss-swift).
+  - **Other languages**: Parakeet handles English and 24 European languages automatically. For anything outside that set (Chinese, Japanese, Korean, Arabic, Hindi, and the rest), switch to Whisper Large v3 Turbo in the Models tab, then set your language in Settings. OpenFlow dictates one selected language at a time (no auto-detect yet).
 - **Custom dictionary & snippets**: teach it "cube cuddle" → `kubectl`, or expand spoken triggers into whole blocks
 - **Hallucination filtering**: silence never injects "Thank you." into your editor
 - **Local history**: searchable transcript log in SQLite, on your disk only
@@ -65,7 +65,7 @@ Onboarding then walks you through Microphone + Accessibility permissions and the
   <tr>
     <td width="25%" valign="top"><img src="docs/images/onboarding-welcome.png" alt="Welcome to OpenFlow" width="100%"></td>
     <td width="25%" valign="top"><img src="docs/images/onboarding-microphone-prompt.png" alt="Microphone permission: audio never leaves your machine" width="100%"></td>
-    <td width="25%" valign="top"><img src="docs/images/onboarding-model.png" alt="Speech model download, Parakeet TDT v2" width="100%"></td>
+    <td width="25%" valign="top"><img src="docs/images/onboarding-model.png" alt="Speech model download, Parakeet TDT v3" width="100%"></td>
     <td width="25%" valign="top"><img src="docs/images/onboarding-try-it.png" alt="Try it: hold the key and speak into the field" width="100%"></td>
   </tr>
 </table>
@@ -117,7 +117,7 @@ hotkey (CGEventTap) ─► AudioCaptureEngine (16 kHz mono)
                             │
                             ▼
                    TranscriptionEngine  ◄─ protocol seam
-                   ├─ FluidAudioEngine (Parakeet TDT v2, CoreML)
+                   ├─ FluidAudioEngine (Parakeet TDT v3, CoreML)
                    └─ WhisperKitEngine (Whisper, CoreML)
                             │
                             ▼
