@@ -60,6 +60,23 @@ public final class PermissionsService: ObservableObject {
         refresh()
     }
 
+    /// Ad-hoc builds get a new code signature on every rebuild, and macOS keys
+    /// Accessibility grants to the signature. After an update the old entry
+    /// looks enabled in System Settings but no longer matches this binary, so
+    /// toggling it does nothing. Clearing it lets the next request register a
+    /// fresh entry that actually applies.
+    public func clearStaleAccessibilityGrant() {
+        let task = Process()
+        task.executableURL = URL(fileURLWithPath: "/usr/bin/tccutil")
+        task.arguments = [
+            "reset", "Accessibility",
+            Bundle.main.bundleIdentifier ?? "dev.openflow.OpenFlow",
+        ]
+        try? task.run()
+        task.waitUntilExit()
+        refresh()
+    }
+
     public enum SettingsPane: String {
         case microphone = "Privacy_Microphone"
         case accessibility = "Privacy_Accessibility"

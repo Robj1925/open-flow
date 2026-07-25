@@ -50,13 +50,29 @@ struct OnboardingView: View {
         .onChange(of: permissions.accessibilityGranted) { _, granted in
             if granted { bringToFront() }
         }
+        .onChange(of: permissions.inputMonitoringGranted) { _, granted in
+            if granted { bringToFront() }
+        }
+    }
+
+    private var window: NSWindow? {
+        NSApp.windows.first { $0.title == "Welcome to OpenFlow" }
+    }
+
+    /// This window floats so it stays visible while the user is off granting
+    /// permissions — but floating also pins it ABOVE System Settings, making a
+    /// freshly opened Settings window look like it never appeared. Drop to
+    /// normal level whenever we send the user there; restored on grant.
+    private func yieldToSystemSettings() {
+        window?.level = .normal
     }
 
     private func bringToFront() {
+        window?.level = .floating
         NSApp.activate(ignoringOtherApps: true)
         // Activation can be denied (cooperative activation, macOS 14+);
         // orderFrontRegardless works even while another app stays active.
-        NSApp.windows.first { $0.title == "Welcome to OpenFlow" }?.orderFrontRegardless()
+        window?.orderFrontRegardless()
     }
 
     private var canContinue: Bool {
@@ -115,7 +131,10 @@ struct OnboardingView: View {
                 explanation: "OpenFlow records only while you hold the dictation key. Audio is transcribed locally and immediately discarded.",
                 requestTitle: "Allow Microphone",
                 request: { Task { await permissions.requestMicrophone() } },
-                openSettings: { PermissionsService.openSystemSettings(.microphone) }
+                openSettings: {
+                    yieldToSystemSettings()
+                    PermissionsService.openSystemSettings(.microphone)
+                }
             )
 
         case .accessibility:
@@ -125,8 +144,23 @@ struct OnboardingView: View {
                 granted: permissions.accessibilityGranted,
                 explanation: "Needed to watch for your dictation hotkey system-wide and to type the transcribed text into the app you're using.",
                 requestTitle: "Request Accessibility",
-                request: { permissions.requestAccessibility() },
-                openSettings: { PermissionsService.openSystemSettings(.accessibility) }
+                request: {
+                    // The system prompt's own "Open System Settings" button is
+                    // out of our reach, so yield before it can be clicked.
+                    yieldToSystemSettings()
+                    permissions.requestAccessibility()
+                },
+                openSettings: {
+                    yieldToSystemSettings()
+                    PermissionsService.openSystemSettings(.accessibility)
+                },
+                stuckHint: "Toggled on but still stuck here? macOS may be holding a grant from an older copy of OpenFlow.",
+                stuckButtonTitle: "Clear stale permission and retry",
+                stuckAction: {
+                    permissions.clearStaleAccessibilityGrant()
+                    yieldToSystemSettings()
+                    permissions.requestAccessibility()
+                }
             )
 
         case .model:
@@ -185,6 +219,7 @@ struct OnboardingView: View {
                         .font(.callout)
                         .foregroundStyle(.orange)
                     Button("Open Input Monitoring Settings") {
+                        yieldToSystemSettings()
                         permissions.requestInputMonitoring()
                         PermissionsService.openSystemSettings(.inputMonitoring)
                     }
@@ -202,6 +237,13 @@ private struct PermissionStepView: View {
     let requestTitle: String
     let request: () -> Void
     let openSettings: () -> Void
+    var stuckHint: String?
+    var stuckButtonTitle: String?
+    var stuckAction: (() -> Void)?
+
+    /// The stuck-permission rescue only appears after a grant attempt, so the
+    /// happy path never shows scary recovery UI.
+    @State private var hasTriedGranting = false
 
     var body: some View {
         VStack(spacing: 16) {
@@ -220,9 +262,26 @@ private struct PermissionStepView: View {
                     .font(.title3)
             } else {
                 VStack(spacing: 10) {
-                    Button(requestTitle, action: request)
-                        .buttonStyle(.borderedProminent)
-                    Button("Open System Settings", action: openSettings)
+                    Button(requestTitle) {
+                        hasTriedGranting = true
+                        request()
+                    }
+                    .buttonStyle(.borderedProminent)
+                    Button("Open System Settings") {
+                        hasTriedGranting = true
+                        openSettings()
+                    }
+                }
+                if hasTriedGranting, let stuckHint, let stuckButtonTitle, let stuckAction {
+                    VStack(spacing: 6) {
+                        Text(stuckHint)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.center)
+                        Button(stuckButtonTitle, action: stuckAction)
+                            .controlSize(.small)
+                    }
+                    .padding(.top, 4)
                 }
             }
         }
