@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://robj1925.github.io/open-flow/sitemap.xml
