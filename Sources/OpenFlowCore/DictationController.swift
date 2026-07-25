@@ -97,6 +97,9 @@ public final class DictationController: ObservableObject {
         audio.onFirstBuffer = { [weak self] in self?.sounds.play(.ready) }
         audio.onLevel = { [weak self] rms in self?.level = rms }
         audio.onMaxDuration = { [weak self] in self?.finishRecording() }
+        // Input device vanished mid-recording (e.g. AirPods disconnected) and
+        // capture could not resume: transcribe whatever was captured so far.
+        audio.onInputDeviceLost = { [weak self] in self?.finishRecording() }
     }
 
     private func hotkeyDown() {

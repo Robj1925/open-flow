@@ -1,4 +1,5 @@
 import AVFoundation
+import CoreAudio
 import Foundation
 
 /// Captures microphone audio and accumulates it as 16 kHz mono Float32 samples.
@@ -6,6 +7,13 @@ import Foundation
 /// Capture starts synchronously on `start()`; the honest "mic is live" signal is
 /// `onFirstBuffer`, which fires when the first real audio buffer arrives — play
 /// the ready tone there, never at hotkey-down (avoids the first-word-loss bug).
+///
+/// The default input device can change at any time (AirPods connect, a USB mic
+/// is unplugged). `inputNode` follows the system default, so a switch stops the
+/// engine and invalidates the tap format. Two listeners funnel into one rebuild
+/// path: mid-recording the tap is reinstalled with the fresh hardware format and
+/// the accumulated 16 kHz samples survive; while idle the graph is re-prepared
+/// so the next `start()` never sees a stale sample rate.
 public final class AudioCaptureEngine {
     public struct Capture {
         public let samples: [Float]
@@ -30,6 +38,9 @@ public final class AudioCaptureEngine {
     public var onLevel: ((Float) -> Void)?
     /// Fired on the main queue when `maxDuration` is hit; owner should stop.
     public var onMaxDuration: (() -> Void)?
+    /// Fired on the main queue when the input device disappeared mid-session and
+    /// capture could not resume; owner should finish with what was recorded.
+    public var onInputDeviceLost: (() -> Void)?
 
     private let engine = AVAudioEngine()
     private let lock = NSLock()
@@ -47,7 +58,53 @@ public final class AudioCaptureEngine {
         interleaved: false
     )!
 
-    public init() {}
+    private var pendingReconfigure: DispatchWorkItem?
+    private var configChangeObserver: NSObjectProtocol?
+    private var deviceListenerBlock: AudioObjectPropertyListenerBlock?
+    private var defaultInputAddress = AudioObjectPropertyAddress(
+        mSelector: kAudioHardwarePropertyDefaultInputDevice,
+        mScope: kAudioObjectPropertyScopeGlobal,
+        mElement: kAudioObjectPropertyElementMain
+    )
+
+    public init() {
+        // The engine posts this (and stops itself) when its I/O configuration
+        // changes, e.g. the active input device is unplugged or renegotiated.
+        configChangeObserver = NotificationCenter.default.addObserver(
+            forName: .AVAudioEngineConfigurationChange,
+            object: engine,
+            queue: .main
+        ) { [weak self] _ in
+            self?.scheduleReconfigure()
+        }
+        // The engine notification alone is not enough: a default-device switch
+        // while the engine sits idle can leave the prepared graph stale without
+        // any notification, so listen to CoreAudio directly as well.
+        let block: AudioObjectPropertyListenerBlock = { [weak self] _, _ in
+            self?.scheduleReconfigure()
+        }
+        deviceListenerBlock = block
+        AudioObjectAddPropertyListenerBlock(
+            AudioObjectID(kAudioObjectSystemObject),
+            &defaultInputAddress,
+            DispatchQueue.main,
+            block
+        )
+    }
+
+    deinit {
+        if let block = deviceListenerBlock {
+            AudioObjectRemovePropertyListenerBlock(
+                AudioObjectID(kAudioObjectSystemObject),
+                &defaultInputAddress,
+                DispatchQueue.main,
+                block
+            )
+        }
+        if let observer = configChangeObserver {
+            NotificationCenter.default.removeObserver(observer)
+        }
+    }
 
     /// Pre-allocates the audio graph so `start()` is fast (~100 ms instead of ~500 ms).
     public func prepare() {
@@ -64,6 +121,21 @@ public final class AudioCaptureEngine {
         maxDurationFired = false
         lock.unlock()
 
+        do {
+            try activate()
+        } catch {
+            // One retry on a fully reset graph: covers a device swap the
+            // listeners have not reconciled yet (e.g. it happened during sleep).
+            engine.stop()
+            engine.reset()
+            try activate()
+        }
+    }
+
+    /// Installs the tap against the current hardware format and starts the
+    /// engine. Session state (accumulated samples) is untouched, so this is
+    /// safe both for a fresh `start()` and for a mid-recording device rebuild.
+    private func activate() throws {
         let input = engine.inputNode
         let hwFormat = input.outputFormat(forBus: 0)
         guard hwFormat.sampleRate > 0 else {
@@ -80,6 +152,40 @@ public final class AudioCaptureEngine {
         engine.prepare()
         try engine.start()
         isRunning = true
+    }
+
+    /// Coalesces the burst of notifications a single device switch produces
+    /// (CoreAudio + engine notification, sometimes several of each).
+    private func scheduleReconfigure() {
+        pendingReconfigure?.cancel()
+        let work = DispatchWorkItem { [weak self] in self?.reconfigure() }
+        pendingReconfigure = work
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15, execute: work)
+    }
+
+    /// Rebuilds the audio graph for the current default input device.
+    private func reconfigure() {
+        if isRunning {
+            // Mid-recording: reinstall the tap with the new device's format and
+            // keep going. `samples` is already 16 kHz mono, so the transition is
+            // seamless apart from the switch itself.
+            engine.inputNode.removeTap(onBus: 0)
+            engine.stop()
+            engine.reset()
+            do {
+                try activate()
+            } catch {
+                isRunning = false
+                onInputDeviceLost?()
+            }
+        } else {
+            // Idle: refresh the prepared graph so the next start() sees the new
+            // device's real sample rate instead of a stale one.
+            engine.stop()
+            engine.reset()
+            _ = engine.inputNode
+            engine.prepare()
+        }
     }
 
     /// Stops capture and returns everything recorded this session.
