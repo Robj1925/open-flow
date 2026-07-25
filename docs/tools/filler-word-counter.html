@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-site-verification" content="r5WcXM0pyY4K82C2E__WblAHcsyXCcNfjlECxPGKRw8" />
+<title>Filler Word Counter: Count and Remove Ums From Any Transcript</title>
+<meta name="description" content="Paste a transcript and instantly count every um, uh, and like. See your fillers per 100 words, get a score, then strip them out in one click. Free and private.">
+<link rel="canonical" href="https://robj1925.github.io/open-flow/tools/filler-word-counter.html">
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://robj1925.github.io/open-flow/tools/filler-word-counter.html">
+<meta property="og:title" content="Filler Word Counter and Remover">
+<meta property="og:description" content="Count every um and uh in your transcript, get a score, and remove them in one click. Runs entirely in your browser.">
+<meta property="og:image" content="https://robj1925.github.io/open-flow/images/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" type="image/png" sizes="32x32" href="../images/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="../images/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="../images/apple-touch-icon.png">
+
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@600,500&f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tools.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "Filler Word Counter and Remover",
+      "url": "https://robj1925.github.io/open-flow/tools/filler-word-counter.html",
+      "applicationCategory": "UtilityApplication",
+      "operatingSystem": "Any (runs in the browser)",
+      "description": "Free tool that counts filler words like um, uh, and like in any transcript, scores your filler rate, and removes them in one click. Everything runs locally in the browser.",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "author": { "@type": "Person", "name": "Robby J", "url": "https://automatewithrobby.fyi/" }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "OpenFlow", "item": "https://robj1925.github.io/open-flow/" },
+        { "@type": "ListItem", "position": 2, "name": "Free Tools", "item": "https://robj1925.github.io/open-flow/tools/" },
+        { "@type": "ListItem", "position": 3, "name": "Filler Word Counter", "item": "https://robj1925.github.io/open-flow/tools/filler-word-counter.html" }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What counts as a filler word?",
+          "acceptedAnswer": { "@type": "Answer", "text": "There are two kinds. Pure fillers are sounds that carry no meaning at all, like um, uh, er, and hmm. Discourse fillers are real words used as padding, like like, you know, basically, and I mean. This tool counts them separately, because the pure sounds are always safe to cut while the discourse words sometimes belong in the sentence." }
+        },
+        {
+          "@type": "Question",
+          "name": "How many filler words are too many?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Ordinary conversation runs about 2 to 5 fillers per 100 words and nobody notices. Polished speakers land under 1 per 100. Above roughly 8 per 100 it starts to distract listeners. Context matters: a casual podcast tolerates far more than a keynote." }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I stop saying um?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Replace the filler with a pause. Fillers appear when your mouth outruns your thinking, so silence does the same job without the noise. Record yourself, count your rate here weekly, and slow your pace slightly. Most people cut their filler rate in half within a few sessions once they can hear it." }
+        },
+        {
+          "@type": "Question",
+          "name": "Can dictation software remove filler words automatically?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. OpenFlow has an optional on-device cleanup pass that strips fillers, stutters, and false starts as you dictate, so the text that lands at your cursor is already clean. It runs locally with Apple Intelligence, so nothing is uploaded." }
+        }
+      ]
+    }
+  ]
+}
+</script>
+<style>
+  .hl-box{
+    background:var(--bg); border:1px solid var(--border); border-radius:12px;
+    padding:1rem 1.2rem; max-height:20rem; overflow:auto; line-height:1.9;
+    font-size:var(--step--1); color:var(--muted); white-space:pre-wrap; word-wrap:break-word;
+  }
+  .f-pure{ background:oklch(0.68 0.19 25 / .22); color:oklch(0.85 0.12 25); border-radius:4px; padding:.05em .3em; font-weight:600; }
+  .f-soft{ background:oklch(0.83 0.14 85 / .18); color:oklch(0.88 0.12 85); border-radius:4px; padding:.05em .3em; font-weight:600; }
+  .chips{ display:flex; flex-wrap:wrap; gap:.5rem; }
+  .legend{ display:flex; gap:1.2rem; flex-wrap:wrap; font-size:var(--step--2); color:var(--faint); margin-bottom:.7rem; }
+  .legend span{ display:inline-flex; align-items:center; gap:.4rem; }
+  .swatch{ width:12px; height:12px; border-radius:3px; display:inline-block; }
+</style>
+</head>
+<body>
+<div class="glow" aria-hidden="true"></div>
+
+<header class="nav">
+  <div class="wrap nav-inner">
+    <a class="brand" href="../index.html" aria-label="OpenFlow home">
+      <img class="logo" src="../images/icon.png" alt="" width="30" height="30" onerror="this.style.display='none'">
+      OpenFlow
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="index.html">All free tools</a>
+      <a href="../index.html#features">Features</a>
+      <a href="https://github.com/Robj1925/open-flow">GitHub</a>
+    </nav>
+    <a class="btn btn-primary btn-sm nav-cta" href="https://github.com/Robj1925/open-flow/releases/latest/download/OpenFlow.zip">Download</a>
+  </div>
+</header>
+
+<main>
+  <div class="wrap-narrow">
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a href="../index.html">OpenFlow</a> <span class="sep">/</span>
+      <a href="index.html">Free tools</a> <span class="sep">/</span>
+      <span>Filler word counter</span>
+    </nav>
+
+    <section class="tool-hero">
+      <h1>Filler word counter and remover</h1>
+      <p class="sub">Paste a transcript or a speech. Every um and uh gets counted and highlighted, you get a score, and one click strips them out.</p>
+    </section>
+
+    <section class="panel" aria-label="Filler word counter">
+      <div class="field">
+        <label for="input">Your transcript</label>
+        <textarea id="input" placeholder="Paste your transcript, speech, or podcast text here. Um, you know, something like this sentence right here." style="min-height:12rem"></textarea>
+        <span class="hint">Your text never leaves this page. Everything runs in your browser.</span>
+      </div>
+
+      <div class="stat-row" style="margin-top:1.4rem">
+        <div class="stat"><div class="n" id="sWords">0</div><div class="l">total words</div></div>
+        <div class="stat warn"><div class="n" id="sFillers">0</div><div class="l">filler words</div></div>
+        <div class="stat"><div class="n" id="sRate">0.0</div><div class="l">per 100 words</div></div>
+        <div class="stat" id="gradeStat"><div class="n" id="sGrade">A</div><div class="l">filler grade</div></div>
+      </div>
+
+      <div id="breakdownWrap" style="margin-top:1.4rem; display:none">
+        <p style="font-size:var(--step--1); color:var(--muted); font-weight:600; margin-bottom:.6rem">What you said most</p>
+        <div class="chips" id="breakdown"></div>
+      </div>
+
+      <div style="margin-top:1.4rem">
+        <div class="legend">
+          <span><i class="swatch" style="background:oklch(0.68 0.19 25 / .5)"></i> Pure filler (safe to cut)</span>
+          <span><i class="swatch" style="background:oklch(0.83 0.14 85 / .45)"></i> Judgment call</span>
+        </div>
+        <div class="hl-box" id="preview" aria-live="polite">Your highlighted transcript will appear here.</div>
+      </div>
+
+      <div style="display:flex; gap:.7rem; flex-wrap:wrap; align-items:center; margin-top:1.4rem">
+        <button class="btn btn-primary" id="cleanBtn" type="button">Remove fillers</button>
+        <label style="display:inline-flex; gap:.5rem; align-items:center; font-size:var(--step--1); color:var(--muted); cursor:pointer">
+          <input type="checkbox" id="alsoSoft" style="width:auto; accent-color:var(--azure)">
+          Also remove judgment-call fillers
+        </label>
+      </div>
+
+      <div id="cleanWrap" style="margin-top:1.4rem; display:none">
+        <div class="field">
+          <label for="output">Cleaned transcript <span class="mono" id="removedNote" style="color:var(--teal); font-weight:400"></span></label>
+          <textarea id="output" readonly style="min-height:10rem"></textarea>
+        </div>
+        <button class="btn btn-ghost btn-sm" id="copyBtn" type="button" style="margin-top:.7rem">Copy cleaned text</button>
+      </div>
+    </section>
+
+    <section class="band" aria-label="FAQ">
+      <div class="section-head"><h2>Questions people ask</h2></div>
+      <div class="faq">
+        <details>
+          <summary>What counts as a filler word?</summary>
+          <p>There are two kinds. Pure fillers are sounds that carry no meaning at all: um, uh, er, hmm. Discourse fillers are real words used as padding: like, you know, basically, I mean. This tool counts them separately, because the pure sounds are always safe to cut while the discourse words sometimes genuinely belong in the sentence.</p>
+        </details>
+        <details>
+          <summary>How many filler words are too many?</summary>
+          <p>Ordinary conversation runs about 2 to 5 per 100 words and nobody notices. Polished speakers land under 1 per 100. Above roughly 8 per 100 it starts to distract listeners. Context matters: a casual podcast tolerates far more than a keynote.</p>
+        </details>
+        <details>
+          <summary>How do I stop saying um?</summary>
+          <p>Replace the filler with a pause. Fillers appear when your mouth outruns your thinking, and silence does the same job without the noise. Record yourself, check your rate here weekly, and slow down slightly. Measuring your <a href="speaking-speed-test.html">speaking speed</a> helps too, since fillers cluster when you rush.</p>
+        </details>
+        <details>
+          <summary>Can dictation software remove filler words automatically?</summary>
+          <p>Yes. <a href="../index.html">OpenFlow</a> has an optional on-device cleanup pass that strips fillers, stutters, and false starts as you dictate, so the text that lands at your cursor is already clean. It runs locally with Apple Intelligence, so nothing is uploaded.</p>
+        </details>
+      </div>
+    </section>
+
+    <section class="of-cta" aria-label="Download OpenFlow">
+      <h2>Or never type the ums in the first place.</h2>
+      <p>OpenFlow is free, open source dictation for macOS. Hold a key, talk, release. Its optional on-device cleanup removes fillers and false starts before the text ever reaches your cursor.</p>
+      <div class="btns">
+        <a class="btn btn-primary" href="https://github.com/Robj1925/open-flow/releases/latest/download/OpenFlow.zip">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3v10.6l3.3-3.3 1.4 1.4L12 17.4 6.3 11.7l1.4-1.4L11 13.6V3h1zM5 19h14v2H5z"/></svg>
+          Download OpenFlow free
+        </a>
+        <a class="btn btn-ghost" href="../index.html">See how it works</a>
+      </div>
+      <p class="fine">Apple Silicon, macOS 14 or later. Cleanup runs on device with Apple Intelligence.</p>
+    </section>
+
+    <section class="band" aria-label="More tools" style="padding-bottom:0">
+      <div class="section-head"><h2>More free tools</h2></div>
+      <div class="tools-grid">
+        <a class="tool-card" href="voice-typing.html"><span class="kicker">Dictation</span><h3>Voice typing in your browser</h3><p>Click the mic, talk, watch your words appear. No signup, nothing installed.</p><span class="go">Open the tool &rarr;</span></a>
+        <a class="tool-card" href="speaking-speed-test.html"><span class="kicker">Test</span><h3>Speaking speed test</h3><p>Talk for 30 seconds and find out your real words per minute.</p><span class="go">Open the tool &rarr;</span></a>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap foot-inner">
+    <a class="brand" href="../index.html">
+      <img class="logo" src="../images/icon.png" alt="" width="26" height="26" style="width:26px;height:26px" onerror="this.style.display='none'">
+      OpenFlow
+    </a>
+    <span>MIT licensed. Built with Swift.</span>
+    <div class="foot-links">
+      <a href="index.html">Free tools</a>
+      <a href="https://github.com/Robj1925/open-flow">GitHub</a>
+      <a href="https://github.com/Robj1925/open-flow/releases">Releases</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  // Pure fillers are meaningless sounds: always safe to strip.
+  const PURE = ['um','umm','uhm','uh','uhh','er','err','erm','ah','ahh','hmm','hm','mhm','mm-hmm','mmhmm'];
+  // Judgment calls are real words used as padding: counted always, removed only on request.
+  const SOFT = ['like','you know','sort of','kind of','i mean','basically','literally','actually','okay so','so yeah'];
+
+  const input = document.getElementById('input');
+  const preview = document.getElementById('preview');
+  const sWords = document.getElementById('sWords');
+  const sFillers = document.getElementById('sFillers');
+  const sRate = document.getElementById('sRate');
+  const sGrade = document.getElementById('sGrade');
+  const gradeStat = document.getElementById('gradeStat');
+  const breakdown = document.getElementById('breakdown');
+  const breakdownWrap = document.getElementById('breakdownWrap');
+  const cleanBtn = document.getElementById('cleanBtn');
+  const alsoSoft = document.getElementById('alsoSoft');
+  const cleanWrap = document.getElementById('cleanWrap');
+  const output = document.getElementById('output');
+  const removedNote = document.getElementById('removedNote');
+  const copyBtn = document.getElementById('copyBtn');
+
+  const escapeRe = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const escapeHtml = s => s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  // \b does not work before an apostrophe-free multiword phrase, so build manually.
+  const phraseRe = p => new RegExp('(?<![\\w\'])' + escapeRe(p).replace(/\s+/g, '\\s+') + '(?![\\w\'])', 'gi');
+
+  function countWords(text){
+    const m = text.trim().match(/[\w'’-]+/g);
+    return m ? m.length : 0;
+  }
+
+  function tally(text){
+    const counts = {};
+    let pure = 0, soft = 0;
+    for (const p of PURE){
+      const n = (text.match(phraseRe(p)) || []).length;
+      if (n){ counts[p] = n; pure += n; }
+    }
+    for (const p of SOFT){
+      const n = (text.match(phraseRe(p)) || []).length;
+      if (n){ counts[p] = n; soft += n; }
+    }
+    return {counts, pure, soft, total: pure + soft};
+  }
+
+  // One combined pass so a replacement can never be re-matched by a later phrase.
+  // Longest phrase first, otherwise "like" would win inside "sort of like".
+  const ALL = PURE.concat(SOFT).slice().sort((a,b) => b.length - a.length);
+  const PURE_SET = new Set(PURE);
+  const allRe = new RegExp(
+    '(?<![\\w\'])(' + ALL.map(p => escapeRe(p).replace(/\s+/g, '\\s+')).join('|') + ')(?![\\w\'])',
+    'gi'
+  );
+
+  function highlight(text){
+    return escapeHtml(text).replace(allRe, m => {
+      const key = m.toLowerCase().replace(/\s+/g, ' ');
+      return '<span class="' + (PURE_SET.has(key) ? 'f-pure' : 'f-soft') + '">' + m + '</span>';
+    });
+  }
+
+  function gradeFor(rate){
+    if (rate < 1)   return ['A', 'good'];
+    if (rate < 2.5) return ['B', 'good'];
+    if (rate < 5)   return ['C', 'accent'];
+    if (rate < 8)   return ['D', 'warn'];
+    return ['F', 'bad'];
+  }
+
+  function render(){
+    const text = input.value;
+    const words = countWords(text);
+    const {counts, total} = tally(text);
+    const rate = words ? (total / words) * 100 : 0;
+
+    sWords.textContent = words.toLocaleString('en-US');
+    sFillers.textContent = total.toLocaleString('en-US');
+    sRate.textContent = rate.toFixed(1);
+
+    const [letter, tone] = gradeFor(rate);
+    sGrade.textContent = words ? letter : '–';
+    gradeStat.className = 'stat ' + (words ? tone : '');
+
+    const entries = Object.entries(counts).sort((a,b) => b[1] - a[1]);
+    breakdownWrap.style.display = entries.length ? '' : 'none';
+    breakdown.innerHTML = entries.map(([w,n]) =>
+      '<span class="chip"><b>' + escapeHtml(w) + '</b> ' + n + '</span>').join('');
+
+    preview.innerHTML = text.trim()
+      ? highlight(text)
+      : 'Your highlighted transcript will appear here.';
+  }
+
+  function clean(){
+    let text = input.value;
+    let removed = 0;
+    const list = alsoSoft.checked ? PURE.concat(SOFT) : PURE;
+    for (const p of list){
+      text = text.replace(phraseRe(p), () => { removed++; return ' '; });
+    }
+    text = text
+      .replace(/\s* \s*/g, ' ')          // collapse the holes left behind
+      .replace(/\s+([,.;:!?])/g, '$1')        // no space before punctuation
+      .replace(/([,;:])\s*(?=[,;:])/g, '')    // kill doubled commas
+      .replace(/([.!?])\s*,/g, '$1')          // stranded comma after a stop
+      .replace(/(^|[.!?]\s+)\s*,\s*/g, '$1')  // stranded comma at sentence start
+      .replace(/[ \t]{2,}/g, ' ')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
+    // Recapitalize sentence starts we may have exposed.
+    text = text.replace(/(^|[.!?]\s+)([a-z])/g, (m, pre, ch) => pre + ch.toUpperCase());
+
+    output.value = text;
+    cleanWrap.style.display = '';
+    removedNote.textContent = 'removed ' + removed + (removed === 1 ? ' filler' : ' fillers');
+    copyBtn.textContent = 'Copy cleaned text';
+  }
+
+  input.addEventListener('input', render);
+  cleanBtn.addEventListener('click', clean);
+  alsoSoft.addEventListener('change', () => { if (cleanWrap.style.display !== 'none') clean(); });
+  copyBtn.addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(output.value); }
+    catch(e){ output.select(); document.execCommand('copy'); }
+    copyBtn.textContent = 'Copied';
+    setTimeout(() => { copyBtn.textContent = 'Copy cleaned text'; }, 1600);
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

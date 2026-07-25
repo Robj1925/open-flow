@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-site-verification" content="r5WcXM0pyY4K82C2E__WblAHcsyXCcNfjlECxPGKRw8" />
+<title>Free Online Voice Recorder: Private, In Your Browser, No Upload</title>
+<meta name="description" content="Record your voice in the browser, listen back, and download the file. Nothing is uploaded because there is no server. Free, no signup, works on Mac and Windows.">
+<link rel="canonical" href="https://robj1925.github.io/open-flow/tools/voice-recorder.html">
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://robj1925.github.io/open-flow/tools/voice-recorder.html">
+<meta property="og:title" content="Online Voice Recorder That Never Uploads">
+<meta property="og:description" content="Record, listen back, and download. Your audio stays in the browser tab because there is no server behind this page.">
+<meta property="og:image" content="https://robj1925.github.io/open-flow/images/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" type="image/png" sizes="32x32" href="../images/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="../images/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="../images/apple-touch-icon.png">
+
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@600,500&f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tools.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "Online Voice Recorder",
+      "url": "https://robj1925.github.io/open-flow/tools/voice-recorder.html",
+      "applicationCategory": "MultimediaApplication",
+      "operatingSystem": "Any (runs in the browser)",
+      "description": "Free online voice recorder that runs entirely in your browser. Record, play back, and download audio with no upload, no account, and no server.",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "author": { "@type": "Person", "name": "Robby J", "url": "https://automatewithrobby.fyi/" }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "OpenFlow", "item": "https://robj1925.github.io/open-flow/" },
+        { "@type": "ListItem", "position": 2, "name": "Free Tools", "item": "https://robj1925.github.io/open-flow/tools/" },
+        { "@type": "ListItem", "position": 3, "name": "Online Voice Recorder", "item": "https://robj1925.github.io/open-flow/tools/voice-recorder.html" }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Is this voice recorder really private?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. This page is served as static files with no backend, so there is nowhere for audio to be sent. The recording is held in your browser's memory and written to your disk only when you press Download. Close the tab and it is gone." }
+        },
+        {
+          "@type": "Question",
+          "name": "What audio format does it record?",
+          "acceptedAnswer": { "@type": "Answer", "text": "It depends on your browser. Safari records M4A (AAC), while Chrome and Edge record WebM with the Opus codec. Both play in modern browsers and in most editing software. If you specifically need MP3, convert the downloaded file with any audio converter." }
+        },
+        {
+          "@type": "Question",
+          "name": "How long can I record?",
+          "acceptedAnswer": { "@type": "Answer", "text": "There is no built-in time limit. The practical ceiling is your device memory, since the audio is held in the tab until you download it. Hours are usually fine, but for long sessions it is safer to download in chunks rather than recording one enormous take." }
+        },
+        {
+          "@type": "Question",
+          "name": "Can this transcribe my recording into text?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Not this tool, it only records audio. If what you actually want is speech turned into text as you speak, that is dictation: OpenFlow does it free and entirely on your Mac, dropping the text wherever your cursor is." }
+        }
+      ]
+    }
+  ]
+}
+</script>
+<style>
+  .rec-wrap{ display:flex; flex-direction:column; align-items:center; gap:1rem; }
+  .timer{ font-family:"Clash Display",sans-serif; font-size:var(--step-2); font-weight:600; letter-spacing:-0.02em; color:var(--ink); }
+  .status{ font-size:var(--step--1); color:var(--muted); text-align:center; min-height:1.5em; }
+  canvas#viz{ width:100%; height:110px; display:block; background:var(--bg); border:1px solid var(--border); border-radius:12px; }
+  .take{
+    background:var(--bg); border:1px solid var(--border); border-radius:12px;
+    padding:1rem 1.2rem; display:flex; flex-direction:column; gap:.75rem;
+  }
+  .take + .take{ margin-top:.8rem; }
+  .take-head{ display:flex; align-items:baseline; gap:.7rem; flex-wrap:wrap; }
+  .take-head h3{ font-family:"General Sans",sans-serif; font-size:var(--step-0); font-weight:600; }
+  .take-head .meta{ font-size:var(--step--2); color:var(--faint); }
+  .take audio{ width:100%; }
+  .take-actions{ display:flex; gap:.6rem; flex-wrap:wrap; }
+</style>
+</head>
+<body>
+<div class="glow" aria-hidden="true"></div>
+
+<header class="nav">
+  <div class="wrap nav-inner">
+    <a class="brand" href="../index.html" aria-label="OpenFlow home">
+      <img class="logo" src="../images/icon.png" alt="" width="30" height="30" onerror="this.style.display='none'">
+      OpenFlow
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="index.html">All free tools</a>
+      <a href="../index.html#features">Features</a>
+      <a href="https://github.com/Robj1925/open-flow">GitHub</a>
+    </nav>
+    <a class="btn btn-primary btn-sm nav-cta" href="https://github.com/Robj1925/open-flow/releases/latest/download/OpenFlow.zip">Download</a>
+  </div>
+</header>
+
+<main>
+  <div class="wrap-narrow">
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a href="../index.html">OpenFlow</a> <span class="sep">/</span>
+      <a href="index.html">Free tools</a> <span class="sep">/</span>
+      <span>Voice recorder</span>
+    </nav>
+
+    <section class="tool-hero">
+      <h1>Online voice recorder that never uploads</h1>
+      <p class="sub">Record, listen back, download. Everything stays inside this browser tab.</p>
+    </section>
+
+    <p class="notice">
+      <span aria-hidden="true">&#128274;</span>
+      <span>Most online recorders send your audio to a server to process it. <b>This one cannot: there is no server.</b> The page is static files, your audio lives in this tab, and it disappears when you close it unless you download it first.</span>
+    </p>
+
+    <div id="unsupported" class="notice warn" style="display:none; margin-top:1rem">
+      <span aria-hidden="true">&#9888;</span>
+      <span>Your browser does not support in-page audio recording (it needs MediaRecorder). Try the current version of <b>Chrome, Edge, Safari, or Firefox</b>.</span>
+    </div>
+
+    <div id="tool">
+      <section class="panel" style="margin-top:1.2rem" aria-label="Recorder">
+        <canvas id="viz" width="1200" height="220" aria-hidden="true"></canvas>
+        <div class="rec-wrap" style="margin-top:1.4rem">
+          <button class="rec-btn" id="rec" type="button" aria-label="Start recording">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3z"/><path d="M19 11a1 1 0 1 0-2 0 5 5 0 0 1-10 0 1 1 0 1 0-2 0 7 7 0 0 0 6 6.92V21H8a1 1 0 1 0 0 2h8a1 1 0 1 0 0-2h-3v-3.08A7 7 0 0 0 19 11z"/></svg>
+          </button>
+          <div class="timer" id="timer" aria-live="off">0:00</div>
+          <p class="status" id="status" aria-live="polite">Click the mic to start recording. Your browser will ask for permission the first time.</p>
+        </div>
+      </section>
+
+      <section class="panel" id="takesPanel" style="display:none" aria-label="Your recordings">
+        <h2>Your recordings</h2>
+        <p style="color:var(--muted); font-size:var(--step--1); margin-top:.4rem">These live in this tab only. Download anything you want to keep.</p>
+        <div id="takes" style="margin-top:1.2rem"></div>
+      </section>
+    </div>
+
+    <section class="band" aria-label="FAQ">
+      <div class="section-head"><h2>Questions people ask</h2></div>
+      <div class="faq">
+        <details>
+          <summary>Is this voice recorder really private?</summary>
+          <p>Yes. This page is static files with no backend, so there is nowhere for audio to be sent. The recording is held in your browser's memory and written to your disk only when you press Download. Close the tab and it is gone. The <a href="https://github.com/Robj1925/open-flow">source is on GitHub</a> if you want to check.</p>
+        </details>
+        <details>
+          <summary>What audio format does it record?</summary>
+          <p>It depends on your browser. Safari records M4A (AAC), Chrome and Edge record WebM with the Opus codec. Both play in modern browsers and most editing software. If you need MP3 specifically, convert the downloaded file with any audio converter.</p>
+        </details>
+        <details>
+          <summary>How long can I record?</summary>
+          <p>There is no built-in limit. The practical ceiling is your device memory, since audio is held in the tab until you download. Hours are usually fine, but for long sessions it is safer to record and download in chunks.</p>
+        </details>
+        <details>
+          <summary>Can this transcribe my recording into text?</summary>
+          <p>Not this tool, it only records. If what you want is speech turned into text as you speak, that is dictation: <a href="../index.html">OpenFlow</a> does it free and entirely on your Mac, dropping the words wherever your cursor is. For a quick browser version, try <a href="voice-typing.html">voice typing</a>.</p>
+        </details>
+      </div>
+    </section>
+
+    <section class="of-cta" aria-label="Download OpenFlow">
+      <h2>Recording your voice to type it out later?</h2>
+      <p>Skip the round trip. OpenFlow turns speech into text the moment you finish talking, in whatever app you are already in, transcribed 100% on your Mac. Free and open source.</p>
+      <div class="btns">
+        <a class="btn btn-primary" href="https://github.com/Robj1925/open-flow/releases/latest/download/OpenFlow.zip">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3v10.6l3.3-3.3 1.4 1.4L12 17.4 6.3 11.7l1.4-1.4L11 13.6V3h1zM5 19h14v2H5z"/></svg>
+          Download OpenFlow free
+        </a>
+        <a class="btn btn-ghost" href="../index.html">See how it works</a>
+      </div>
+      <p class="fine">Apple Silicon, macOS 14 or later. No cloud, no account.</p>
+    </section>
+
+    <section class="band" aria-label="More tools" style="padding-bottom:0">
+      <div class="section-head"><h2>More free tools</h2></div>
+      <div class="tools-grid">
+        <a class="tool-card" href="voice-typing.html"><span class="kicker">Dictation</span><h3>Voice typing in your browser</h3><p>Talk and watch the text appear. Copy it out when you are done.</p><span class="go">Open the tool &rarr;</span></a>
+        <a class="tool-card" href="speaking-speed-test.html"><span class="kicker">Test</span><h3>Speaking speed test</h3><p>Talk for 30 seconds and find out your real words per minute.</p><span class="go">Open the tool &rarr;</span></a>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap foot-inner">
+    <a class="brand" href="../index.html">
+      <img class="logo" src="../images/icon.png" alt="" width="26" height="26" style="width:26px;height:26px" onerror="this.style.display='none'">
+      OpenFlow
+    </a>
+    <span>MIT licensed. Built with Swift.</span>
+    <div class="foot-links">
+      <a href="index.html">Free tools</a>
+      <a href="https://github.com/Robj1925/open-flow">GitHub</a>
+      <a href="https://github.com/Robj1925/open-flow/releases">Releases</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  if (!navigator.mediaDevices || !window.MediaRecorder){
+    document.getElementById('unsupported').style.display = '';
+    document.getElementById('tool').style.display = 'none';
+    return;
+  }
+
+  const rec = document.getElementById('rec');
+  const timerEl = document.getElementById('timer');
+  const status = document.getElementById('status');
+  const takes = document.getElementById('takes');
+  const takesPanel = document.getElementById('takesPanel');
+  const canvas = document.getElementById('viz');
+  const ctx = canvas.getContext('2d');
+
+  let stream = null, recorder = null, chunks = [], audioCtx = null, analyser = null, raf = 0;
+  let startedAt = 0, tick = 0, takeNo = 0, recording = false, mime = '', ext = 'webm';
+
+  const pad = n => String(n).padStart(2, '0');
+  const clock = s => Math.floor(s / 60) + ':' + pad(Math.floor(s % 60));
+  const size = b => b < 1024*1024 ? (b/1024).toFixed(0) + ' KB' : (b/1024/1024).toFixed(1) + ' MB';
+
+  function pickMime(){
+    const candidates = ['audio/mp4', 'audio/webm;codecs=opus', 'audio/webm'];
+    for (const c of candidates){
+      if (MediaRecorder.isTypeSupported(c)) return c;
+    }
+    return '';
+  }
+
+  function drawIdle(){
+    const w = canvas.width, h = canvas.height;
+    ctx.clearRect(0, 0, w, h);
+    ctx.strokeStyle = 'rgba(150,160,200,0.28)';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(0, h/2); ctx.lineTo(w, h/2);
+    ctx.stroke();
+  }
+
+  function draw(){
+    raf = requestAnimationFrame(draw);
+    const w = canvas.width, h = canvas.height;
+    const buf = new Uint8Array(analyser.fftSize);
+    analyser.getByteTimeDomainData(buf);
+    ctx.clearRect(0, 0, w, h);
+    const grad = ctx.createLinearGradient(0, 0, w, 0);
+    grad.addColorStop(0,   '#7c6cf0');
+    grad.addColorStop(0.5, '#57a8f5');
+    grad.addColorStop(1,   '#6fe3e1');
+    ctx.strokeStyle = grad;
+    ctx.lineWidth = 3;
+    ctx.lineJoin = 'round';
+    ctx.beginPath();
+    const step = w / buf.length;
+    for (let i = 0; i < buf.length; i++){
+      const y = (buf[i] / 128) * (h / 2);
+      const x = i * step;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+  }
+
+  function addTake(blob, seconds){
+    takeNo++;
+    const url = URL.createObjectURL(blob);
+    const name = 'openflow-recording-' + takeNo + '.' + ext;
+
+    const el = document.createElement('div');
+    el.className = 'take';
+    el.innerHTML =
+      '<div class="take-head"><h3>Recording ' + takeNo + '</h3>' +
+      '<span class="meta">' + clock(seconds) + ' &middot; ' + size(blob.size) + '</span></div>';
+
+    const audio = document.createElement('audio');
+    audio.controls = true;
+    audio.src = url;
+    el.appendChild(audio);
+
+    const actions = document.createElement('div');
+    actions.className = 'take-actions';
+
+    const dl = document.createElement('a');
+    dl.className = 'btn btn-primary btn-sm';
+    dl.href = url;
+    dl.download = name;
+    dl.textContent = 'Download';
+    actions.appendChild(dl);
+
+    const del = document.createElement('button');
+    del.className = 'btn btn-ghost btn-sm';
+    del.type = 'button';
+    del.textContent = 'Delete';
+    del.addEventListener('click', () => {
+      URL.revokeObjectURL(url);
+      el.remove();
+      if (!takes.children.length) takesPanel.style.display = 'none';
+    });
+    actions.appendChild(del);
+
+    el.appendChild(actions);
+    takes.prepend(el);
+    takesPanel.style.display = '';
+  }
+
+  async function start(){
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({audio: true});
+    } catch(err){
+      status.innerHTML = err && err.name === 'NotAllowedError'
+        ? 'Microphone blocked. Click the mic or lock icon in your address bar, allow access for this page, then try again.'
+        : 'Could not open the microphone: ' + (err && err.message ? err.message : 'unknown error');
+      return;
+    }
+
+    mime = pickMime();
+    ext = mime.indexOf('mp4') !== -1 ? 'm4a' : 'webm';
+    chunks = [];
+    recorder = mime ? new MediaRecorder(stream, {mimeType: mime}) : new MediaRecorder(stream);
+    recorder.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
+    recorder.onstop = () => {
+      const seconds = (Date.now() - startedAt) / 1000;
+      const blob = new Blob(chunks, {type: recorder.mimeType || mime || 'audio/webm'});
+      if (blob.size) addTake(blob, seconds);
+      // Release the mic so the browser's recording indicator goes away.
+      stream.getTracks().forEach(t => t.stop());
+      stream = null;
+      if (audioCtx){ audioCtx.close(); audioCtx = null; }
+      cancelAnimationFrame(raf);
+      drawIdle();
+    };
+
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 1024;
+    audioCtx.createMediaStreamSource(stream).connect(analyser);
+    draw();
+
+    recorder.start();
+    recording = true;
+    startedAt = Date.now();
+    rec.classList.add('recording');
+    rec.setAttribute('aria-label', 'Stop recording');
+    status.textContent = 'Recording. Click again to stop.';
+    timerEl.textContent = '0:00';
+    tick = setInterval(() => {
+      timerEl.textContent = clock((Date.now() - startedAt) / 1000);
+    }, 250);
+  }
+
+  function stop(){
+    recording = false;
+    clearInterval(tick);
+    rec.classList.remove('recording');
+    rec.setAttribute('aria-label', 'Start recording');
+    status.textContent = 'Saved below. Click the mic to record another.';
+    if (recorder && recorder.state !== 'inactive') recorder.stop();
+  }
+
+  rec.addEventListener('click', () => recording ? stop() : start());
+  drawIdle();
+})();
+</script>
+</body>
+</html>

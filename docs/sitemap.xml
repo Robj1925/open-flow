@@ -7,10 +7,10 @@
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://robj1925.github.io/open-flow/tools/speaking-speed-test.html</loc>
+    <loc>https://robj1925.github.io/open-flow/tools/</loc>
     <lastmod>2026-07-25</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
   </url>
   <url>
     <loc>https://robj1925.github.io/open-flow/tools/voice-typing.html</loc>
@@ -25,13 +25,49 @@
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://robj1925.github.io/open-flow/tools/mac-dictation-commands.html</loc>
+    <loc>https://robj1925.github.io/open-flow/tools/dictation-app-picker.html</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://robj1925.github.io/open-flow/tools/speech-to-text-accuracy-test.html</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://robj1925.github.io/open-flow/tools/filler-word-counter.html</loc>
     <lastmod>2026-07-25</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://robj1925.github.io/open-flow/tools/words-to-minutes.html</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://robj1925.github.io/open-flow/tools/speaking-speed-test.html</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://robj1925.github.io/open-flow/tools/voice-recorder.html</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://robj1925.github.io/open-flow/tools/mac-dictation-commands.html</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://robj1925.github.io/open-flow/tools/keyboard-tester.html</loc>
     <lastmod>2026-07-25</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>

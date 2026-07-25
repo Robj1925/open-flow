@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Which Dictation App Should I Use? Honest Picker and Comparison (2026)</title>
+<meta name="description" content="Answer five quick questions and get an honest pick: OpenFlow, Wispr Flow, SuperWhisper, MacWhisper, Apple Dictation, Otter.ai, or Dragon. Plus a full comparison table for Mac and Windows.">
+<link rel="canonical" href="https://robj1925.github.io/open-flow/tools/dictation-app-picker.html">
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://robj1925.github.io/open-flow/tools/dictation-app-picker.html">
+<meta property="og:title" content="Which Dictation App Should I Use? Honest Picker (2026)">
+<meta property="og:description" content="Five questions, one honest recommendation, and a full comparison of OpenFlow, Wispr Flow, SuperWhisper, MacWhisper, Apple Dictation, Otter.ai, and Dragon.">
+<meta property="og:image" content="https://robj1925.github.io/open-flow/images/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" type="image/png" sizes="32x32" href="../images/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="../images/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="../images/apple-touch-icon.png">
+
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@600,500&f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tools.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "Dictation App Picker",
+      "url": "https://robj1925.github.io/open-flow/tools/dictation-app-picker.html",
+      "applicationCategory": "UtilityApplication",
+      "operatingSystem": "Any (runs in the browser)",
+      "description": "Free interactive picker that asks five questions and recommends the right dictation app for your setup, comparing OpenFlow, Wispr Flow, SuperWhisper, MacWhisper, Apple Dictation, Otter.ai, and Dragon.",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "author": { "@type": "Person", "name": "Robby J", "url": "https://automatewithrobby.fyi/" }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "OpenFlow", "item": "https://robj1925.github.io/open-flow/" },
+        { "@type": "ListItem", "position": 2, "name": "Free Tools", "item": "https://robj1925.github.io/open-flow/tools/" },
+        { "@type": "ListItem", "position": 3, "name": "Dictation App Picker", "item": "https://robj1925.github.io/open-flow/tools/dictation-app-picker.html" }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is the best dictation app for Mac?",
+          "acceptedAnswer": { "@type": "Answer", "text": "It depends on privacy and budget. If you want free, private, on-device dictation on an Apple Silicon Mac, OpenFlow is the pick. If you are happy with a cloud subscription and want maximum polish, Wispr Flow is excellent. If you prefer to pay once, SuperWhisper covers live dictation and MacWhisper covers transcribing recordings." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the best free dictation app?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Apple Dictation, built into every Mac, is the zero-effort answer. If you want system-wide hold-a-key dictation with more accuracy and a custom dictionary, OpenFlow is also completely free, open source, and runs entirely on your Mac." }
+        },
+        {
+          "@type": "Question",
+          "name": "Which dictation apps work fully offline?",
+          "acceptedAnswer": { "@type": "Answer", "text": "OpenFlow, SuperWhisper, and MacWhisper run entirely on your Mac. Apple Dictation processes on device on Apple Silicon Macs. On Windows, Voice Access is built in and works offline. Cloud services like Wispr Flow and Otter.ai need an internet connection." }
+        },
+        {
+          "@type": "Question",
+          "name": "Is Dragon still available for Mac?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No. Dragon for Mac was discontinued in 2018, and Nuance now ships Dragon for Windows only. Mac users need alternatives, which is exactly what this picker covers: OpenFlow for free local dictation, Wispr Flow for cloud polish, SuperWhisper or MacWhisper for one-time purchases." }
+        }
+      ]
+    }
+  ]
+}
+</script>
+
+<style>
+.quiz-head{ display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-bottom:.7rem; }
+.quiz-progress{ font-size:var(--step--1); color:var(--faint); font-weight:600; letter-spacing:.02em; }
+.quiz-bar{ height:6px; border-radius:99px; background:var(--bg); border:1px solid var(--border); overflow:hidden; margin-bottom:1.5rem; }
+.quiz-bar span{ display:block; height:100%; width:20%; background:var(--grad); transition:width .3s var(--ease); }
+.qstep h2{ font-size:var(--step-1); letter-spacing:-0.015em; outline:none; }
+.qstep h2:focus-visible{ outline:2px solid var(--azure); outline-offset:4px; border-radius:4px; }
+.opts{ display:grid; gap:.7rem; margin-top:1.1rem; }
+.opt{
+  font-family:inherit; font-size:var(--step-0); font-weight:600; color:var(--ink);
+  text-align:left; width:100%; background:var(--bg); border:1px solid var(--border);
+  border-radius:12px; padding:.95rem 1.15rem; cursor:pointer;
+  transition:border-color .2s, background .2s, transform .18s var(--ease);
+}
+.opt:hover{ border-color:var(--border-lit); background:var(--surface-2); transform:translateY(-1px); }
+.opt[aria-pressed="true"]{ border-color:var(--azure); background:oklch(0.58 0.20 274 / .14); }
+.opt .opt-hint{ display:block; font-size:var(--step--1); font-weight:400; color:var(--faint); margin-top:.15rem; }
+.quiz-nav{ margin-top:1.5rem; display:flex; gap:.8rem; align-items:center; flex-wrap:wrap; }
+.result .kicker{ font-size:var(--step--2); text-transform:uppercase; letter-spacing:.08em; color:var(--azure); font-weight:600; }
+.result h2{ font-size:var(--step-2); letter-spacing:-0.02em; margin-top:.35rem; outline:none; }
+.result h2:focus-visible{ outline:2px solid var(--azure); outline-offset:4px; border-radius:4px; }
+.result p{ margin-top:.9rem; color:var(--muted); }
+.result .runner{ font-size:var(--step--1); }
+.result-actions{ display:flex; gap:.85rem; flex-wrap:wrap; align-items:center; margin-top:1.3rem; }
+.vendor-link{ color:var(--teal); font-weight:600; font-size:var(--step-0); }
+.vendor-link:hover{ text-decoration:underline; }
+.result .soft{ font-size:var(--step--1); color:var(--faint); }
+[hidden]{ display:none !important; }
+</style>
+</head>
+<body>
+<div class="glow" aria-hidden="true"></div>
+
+<header class="nav">
+  <div class="wrap nav-inner">
+    <a class="brand" href="../index.html" aria-label="OpenFlow home">
+      <img class="logo" src="../images/icon.png" alt="" width="30" height="30" onerror="this.style.display='none'">
+      OpenFlow
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="index.html">All free tools</a>
+      <a href="../index.html#features">Features</a>
+      <a href="https://github.com/Robj1925/open-flow">GitHub</a>
+    </nav>
+    <a class="btn btn-primary btn-sm nav-cta" href="https://github.com/Robj1925/open-flow/releases/latest/download/OpenFlow.zip">Download</a>
+  </div>
+</header>
+
+<main>
+  <div class="wrap-narrow">
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a href="../index.html">OpenFlow</a> <span class="sep">/</span>
+      <a href="index.html">Free tools</a> <span class="sep">/</span>
+      <span>Dictation app picker</span>
+    </nav>
+
+    <section class="tool-hero">
+      <h1>Which dictation app should you actually use?</h1>
+      <p class="sub">Five questions, one honest answer. Built by the maker of OpenFlow, and it will happily recommend someone else when that is the right call.</p>
+    </section>
+
+    <section class="panel" aria-label="Dictation app picker quiz">
+      <div class="quiz-head">
+        <p class="quiz-progress" id="progress" aria-live="polite">Question 1 of 5</p>
+      </div>
+      <div class="quiz-bar" aria-hidden="true"><span id="bar"></span></div>
+
+      <noscript><p class="notice"><span aria-hidden="true">&#9888;&#65039;</span><span>The quiz needs JavaScript. No problem: the full comparison table below covers every option.</span></p></noscript>
+
+      <div class="qstep" data-step="0">
+        <h2 id="q1h" tabindex="-1">What computer do you use?</h2>
+        <div class="opts" role="group" aria-labelledby="q1h">
+          <button type="button" class="opt" data-q="computer" data-v="silicon" aria-pressed="false">Mac with Apple Silicon <span class="opt-hint">M1, M2, M3, or M4 chip (roughly 2021 or newer)</span></button>
+          <button type="button" class="opt" data-q="computer" data-v="intel" aria-pressed="false">Mac with Intel <span class="opt-hint">Roughly 2020 or older</span></button>
+          <button type="button" class="opt" data-q="computer" data-v="windows" aria-pressed="false">Windows <span class="opt-hint">Desktop or laptop</span></button>
+        </div>
+      </div>
+
+      <div class="qstep" data-step="1" hidden>
+        <h2 id="q2h" tabindex="-1">How do you feel about your voice going to the cloud?</h2>
+        <div class="opts" role="group" aria-labelledby="q2h">
+          <button type="button" class="opt" data-q="cloud" data-v="local" aria-pressed="false">Hard no, must stay on my device <span class="opt-hint">Privacy first, nothing leaves my machine</span></button>
+          <button type="button" class="opt" data-q="cloud" data-v="cloudok" aria-pressed="false">Fine if the product is great <span class="opt-hint">Convenience can win</span></button>
+        </div>
+      </div>
+
+      <div class="qstep" data-step="2" hidden>
+        <h2 id="q3h" tabindex="-1">What is your budget?</h2>
+        <div class="opts" role="group" aria-labelledby="q3h">
+          <button type="button" class="opt" data-q="budget" data-v="free" aria-pressed="false">Free only</button>
+          <button type="button" class="opt" data-q="budget" data-v="onetime" aria-pressed="false">One-time purchase is fine</button>
+          <button type="button" class="opt" data-q="budget" data-v="sub" aria-pressed="false">A subscription is fine</button>
+        </div>
+      </div>
+
+      <div class="qstep" data-step="3" hidden>
+        <h2 id="q4h" tabindex="-1">What are you mostly transcribing?</h2>
+        <div class="opts" role="group" aria-labelledby="q4h">
+          <button type="button" class="opt" data-q="usage" data-v="dictate" aria-pressed="false">Dictating into apps as I work <span class="opt-hint">Email, chat, docs, code comments</span></button>
+          <button type="button" class="opt" data-q="usage" data-v="meetings" aria-pressed="false">Recorded meetings and audio files</button>
+          <button type="button" class="opt" data-q="usage" data-v="documents" aria-pressed="false">Long documents, medical, or legal</button>
+        </div>
+      </div>
+
+      <div class="qstep" data-step="4" hidden>
+        <h2 id="q5h" tabindex="-1">What languages do you speak?</h2>
+        <div class="opts" role="group" aria-labelledby="q5h">
+          <button type="button" class="opt" data-q="lang" data-v="euro" aria-pressed="false">English or European languages</button>
+          <button type="button" class="opt" data-q="lang" data-v="global" aria-pressed="false">Also Chinese, Japanese, Korean, Arabic, Hindi, or others</button>
+        </div>
+      </div>
+
+      <div class="qstep result" id="result" hidden>
+        <p class="kicker">Our honest pick for you</p>
+        <h2 id="resultName" tabindex="-1">OpenFlow</h2>
+        <p id="resultWhy"></p>
+        <p class="runner" id="resultRunner"></p>
+        <div class="result-actions" id="resultActions"></div>
+        <p class="soft" id="resultSoft"></p>
+      </div>
+
+      <div class="quiz-nav">
+        <button type="button" id="back" class="btn btn-ghost btn-sm" disabled>&larr; Back</button>
+        <button type="button" id="restart" class="btn btn-ghost btn-sm" hidden>Start over</button>
+      </div>
+    </section>
+
+    <section class="band" aria-label="Comparison table">
+      <div class="section-head">
+        <h2>Every option, side by side</h2>
+        <p>The full comparison behind the quiz, current as of mid 2026.</p>
+      </div>
+      <div class="table-scroll">
+        <table class="cmp">
+          <thead>
+            <tr><th>App</th><th>Price</th><th>Platforms</th><th>Runs on device</th><th>Open source</th><th>Works in any app</th><th>Best for</th></tr>
+          </thead>
+          <tbody>
+            <tr class="hl"><td>OpenFlow</td><td>Free</td><td>macOS (Apple Silicon)</td><td class="good">Yes</td><td class="good">Yes, MIT</td><td class="good">Yes</td><td>Private hold-a-key dictation</td></tr>
+            <tr><td>Wispr Flow</td><td>About $12 to $15 monthly</td><td>macOS, Windows, iOS</td><td class="bad">No, cloud</td><td>No</td><td class="good">Yes</td><td>Polished cross-device dictation</td></tr>
+            <tr><td>SuperWhisper</td><td>Subscription or one-time</td><td>macOS, iOS</td><td class="good">Yes</td><td>No</td><td class="good">Yes</td><td>Local dictation with modes</td></tr>
+            <tr><td>MacWhisper</td><td>One-time purchase</td><td>macOS</td><td class="good">Yes</td><td>No</td><td class="warn">Mostly transcription of files</td><td>Transcribing recordings</td></tr>
+            <tr><td>Apple Dictation</td><td>Free, built in</td><td>Apple devices</td><td>On Apple Silicon, yes</td><td>No</td><td class="good">Yes</td><td>Casual quick dictation</td></tr>
+            <tr><td>Otter.ai</td><td>Free tier plus subscription</td><td>Web, iOS, Android</td><td class="bad">No, cloud</td><td>No</td><td class="warn">Meeting focused</td><td>Meeting notes and transcripts</td></tr>
+            <tr><td>Dragon</td><td>One-time plus upgrades</td><td>Windows only now</td><td class="good">Yes</td><td>No</td><td class="good">Yes</td><td>Medical, legal, and accessibility workflows on Windows</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="margin-top:.8rem; font-size:var(--step--2); color:var(--faint)">Dragon for Mac was discontinued in 2018, and prices change, so verify current details with each vendor before you decide.</p>
+    </section>
+
+    <section class="band" aria-label="FAQ" style="padding-top:0">
+      <div class="section-head">
+        <h2>Fair questions</h2>
+      </div>
+      <div class="faq">
+        <details>
+          <summary>What is the best dictation app for Mac?</summary>
+          <p>It depends on privacy and budget. If you want free, private, on-device dictation on an Apple Silicon Mac, <a href="../index.html">OpenFlow</a> is the pick. If you are happy with a cloud subscription and want maximum polish, Wispr Flow is excellent. If you prefer to pay once, SuperWhisper covers live dictation and MacWhisper covers transcribing recordings.</p>
+        </details>
+        <details>
+          <summary>What is the best free dictation app?</summary>
+          <p>Apple Dictation, built into every Mac, is the zero-effort answer. If you want system-wide hold-a-key dictation with more accuracy and a custom dictionary, <a href="../index.html">OpenFlow</a> is also completely free, open source, and runs entirely on your Mac.</p>
+        </details>
+        <details>
+          <summary>Which dictation apps work fully offline?</summary>
+          <p>OpenFlow, SuperWhisper, and MacWhisper run entirely on your Mac. Apple Dictation processes on device on Apple Silicon Macs. On Windows, Voice Access is built in and works offline. Cloud services like Wispr Flow and Otter.ai need an internet connection.</p>
+        </details>
+        <details>
+          <summary>Is Dragon still available for Mac?</summary>
+          <p>No. Dragon for Mac was discontinued in 2018, and Nuance now ships Dragon for Windows only. Mac users need alternatives, which is exactly what this picker covers: OpenFlow for free local dictation, Wispr Flow for cloud polish, SuperWhisper or MacWhisper for one-time purchases.</p>
+        </details>
+      </div>
+    </section>
+
+    <section class="of-cta" aria-label="Download OpenFlow">
+      <h2>Whatever you pick, try the free one first</h2>
+      <p>OpenFlow gives you hold-a-key dictation in any app on your Mac, transcribed 100% on device. Free, open source, no account. If it is not for you, the paid apps will still be there tomorrow.</p>
+      <div class="btns">
+        <a class="btn btn-primary" href="https://github.com/Robj1925/open-flow/releases/latest/download/OpenFlow.zip">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3v10.6l3.3-3.3 1.4 1.4L12 17.4 6.3 11.7l1.4-1.4L11 13.6V3h1zM5 19h14v2H5z"/></svg>
+          Download OpenFlow free
+        </a>
+        <a class="btn btn-ghost" href="../index.html">See how it works</a>
+      </div>
+      <p class="fine">Apple Silicon, macOS 14 or later. About two minutes from download to first dictation.</p>
+    </section>
+
+    <section class="band" aria-label="More tools" style="padding-bottom:0">
+      <div class="section-head"><h2>More free tools</h2></div>
+      <div class="tools-grid">
+        <a class="tool-card" href="dictation-cost-calculator.html"><span class="kicker">Calculator</span><h3>Dictation cost calculator</h3><p>What a subscription really costs over the years you will actually use it.</p><span class="go">Open the tool &rarr;</span></a>
+        <a class="tool-card" href="mac-dictation-commands.html"><span class="kicker">Cheat sheet</span><h3>Mac dictation commands</h3><p>Searchable cheat sheet of every voice command your Mac understands.</p><span class="go">Open the tool &rarr;</span></a>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap foot-inner">
+    <a class="brand" href="../index.html">
+      <img class="logo" src="../images/icon.png" alt="" width="26" height="26" style="width:26px;height:26px" onerror="this.style.display='none'">
+      OpenFlow
+    </a>
+    <span>MIT licensed. Built with Swift.</span>
+    <div class="foot-links">
+      <a href="index.html">Free tools</a>
+      <a href="https://github.com/Robj1925/open-flow">GitHub</a>
+      <a href="https://github.com/Robj1925/open-flow/releases">Releases</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var steps = Array.prototype.slice.call(document.querySelectorAll('.qstep[data-step]'));
+  var TOTAL = steps.length;
+  var result = document.getElementById('result');
+  var progress = document.getElementById('progress');
+  var bar = document.getElementById('bar');
+  var backBtn = document.getElementById('back');
+  var restartBtn = document.getElementById('restart');
+  var answers = {};
+  var step = 0;
+  var onResult = false;
+
+  var DL_SVG = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="width:1.1em;height:1.1em"><path d="M12 3v10.6l3.3-3.3 1.4 1.4L12 17.4 6.3 11.7l1.4-1.4L11 13.6V3h1zM5 19h14v2H5z"/></svg>';
+
+  function focusHeading(container){
+    var h = container.querySelector('h2');
+    if (h) h.focus();
+  }
+
+  function sync(){
+    steps.forEach(function(s, i){ s.hidden = onResult || i !== step; });
+    result.hidden = !onResult;
+    restartBtn.hidden = !onResult;
+    backBtn.disabled = !onResult && step === 0;
+    if (onResult){
+      progress.textContent = 'Done. Here is your honest pick.';
+      bar.style.width = '100%';
+    } else {
+      progress.textContent = 'Question ' + (step + 1) + ' of ' + TOTAL;
+      bar.style.width = (((step + 1) / TOTAL) * 100) + '%';
+      steps[step].querySelectorAll('.opt').forEach(function(b){
+        b.setAttribute('aria-pressed', String(answers[b.getAttribute('data-q')] === b.getAttribute('data-v')));
+      });
+    }
+  }
+
+  document.querySelectorAll('.opt').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      answers[btn.getAttribute('data-q')] = btn.getAttribute('data-v');
+      if (step < TOTAL - 1){
+        step++;
+        sync();
+        focusHeading(steps[step]);
+      } else {
+        onResult = true;
+        render();
+        sync();
+        focusHeading(result);
+      }
+    });
+  });
+
+  backBtn.addEventListener('click', function(){
+    if (onResult){ onResult = false; }
+    else if (step > 0){ step--; }
+    sync();
+    focusHeading(steps[step]);
+  });
+
+  restartBtn.addEventListener('click', function(){
+    answers = {};
+    onResult = false;
+    step = 0;
+    sync();
+    focusHeading(steps[0]);
+  });
+
+  function recommend(a){
+    var silicon = a.computer === 'silicon';
+    var intel = a.computer === 'intel';
+    var win = a.computer === 'windows';
+    var mac = !win;
+    var localOnly = a.cloud === 'local';
+    var subOK = a.budget === 'sub';
+    var oneTime = a.budget === 'onetime';
+    var freeOnly = a.budget === 'free';
+    var meetings = a.usage === 'meetings';
+    var docs = a.usage === 'documents';
+    var global = a.lang === 'global';
+
+    var soft = win
+      ? 'If you ever move to an Apple Silicon Mac, the free local option is OpenFlow.'
+      : (intel
+        ? 'If you ever upgrade to an Apple Silicon Mac, the free local option is OpenFlow.'
+        : 'If you ever want the free local option: OpenFlow. One download, no account.');
+
+    var dragonMacNote = ' Dragon, the old medical and legal standard, has been Windows only since 2018, so a modern dictation app is the Mac path.';
+
+    // Recorded meetings and audio files, comfortable with cloud plus subscription.
+    if (meetings && !localOnly && subOK){
+      return {
+        name: 'Otter.ai',
+        url: 'https://otter.ai',
+        link: 'Visit otter.ai',
+        why: 'You mostly transcribe recorded meetings and audio files, and you told us cloud processing and a subscription are both fine. Otter.ai is purpose built for that job: record or upload, then get speaker labels, summaries, and searchable transcripts. A dictation app (OpenFlow included) is the wrong tool for recorded meetings, so we will say so plainly.',
+        runner: mac
+          ? 'Runner-up: MacWhisper, a one-time purchase that transcribes the same files locally on your Mac.'
+          : 'Runner-up: the transcription feature already inside Microsoft Word, if you pay for Microsoft 365.',
+        soft: soft
+      };
+    }
+
+    // Recorded meetings on a Mac, keeping it local or subscription-free.
+    if (meetings && mac){
+      return {
+        name: 'MacWhisper',
+        url: 'https://goodsnooze.gumroad.com/l/macwhisper',
+        link: 'Get MacWhisper (Gumroad)',
+        why: 'You mostly transcribe recorded meetings and audio files' +
+          (localOnly ? ', and those recordings need to stay off the cloud.' : ', and you would rather not add another subscription.') +
+          ' MacWhisper is the standard Mac tool for exactly this: drop a file in, get a transcript out, pay once. It runs Whisper entirely on your Mac, so audio never leaves your machine.' +
+          (intel ? ' It also still supports Intel Macs, which matters here because OpenFlow needs Apple Silicon.' : ''),
+        runner: 'Runner-up: Otter.ai, if live meeting capture and cloud convenience ever start to matter more than privacy.',
+        soft: soft
+      };
+    }
+
+    // Windows.
+    if (win){
+      if (!localOnly && subOK){
+        return {
+          name: 'Wispr Flow',
+          url: 'https://wisprflow.ai',
+          link: 'Visit wisprflow.ai',
+          why: 'You are on Windows, you are fine with cloud processing, and a subscription fits your budget. Wispr Flow is one of the few polished dictation products with a real Windows app, and it types into anything.' +
+            (docs ? ' For heavy document, medical, or legal work, also look at Dragon Professional: it remains the Windows standard for that.' : '') +
+            (global ? ' Its cloud models also handle a wide range of languages, including Chinese, Japanese, Korean, Arabic, and Hindi.' : ''),
+          runner: 'Runner-up: Windows Voice Access, free, offline, and already built into Windows 11.',
+          soft: soft
+        };
+      }
+      return {
+        name: 'Windows Voice Access',
+        url: 'https://support.microsoft.com/en-us/topic/use-voice-access-to-control-your-pc-author-text-with-your-voice-4dcd23ee-f1b9-4fd1-bacc-862ab60f2a81',
+        link: 'Read the Microsoft Voice Access guide',
+        why: 'The honest answer is already on your PC: Voice Access is built into Windows 11, costs nothing, works offline, and lets you dictate into any app and control the system by voice.' +
+          (localOnly ? ' Since your voice must stay on your device, it fits your privacy requirement exactly.' : '') +
+          (freeOnly && !localOnly ? ' It also matches your free only budget perfectly.' : '') +
+          (docs ? ' For heavy document, medical, or legal dictation, Dragon Professional is the paid Windows standard and runs on device, so it is worth a serious look.' : '') +
+          (meetings ? ' For recorded meetings and audio files, pair it with a free local Whisper tool, since live dictation apps are the wrong shape for recordings.' : ''),
+        runner: docs
+          ? 'Runner-up: Dragon Professional, a one-time purchase built for medical, legal, and accessibility workflows.'
+          : (!localOnly
+            ? 'Runner-up: Wispr Flow, if you later decide a cloud subscription is worth it for extra polish.'
+            : 'Runner-up: Dragon Professional, a one-time purchase that also keeps everything on device.'),
+        soft: soft
+      };
+    }
+
+    // Intel Mac (meetings already handled above).
+    if (intel){
+      if (localOnly || oneTime){
+        return {
+          name: 'MacWhisper',
+          url: 'https://goodsnooze.gumroad.com/l/macwhisper',
+          link: 'Get MacWhisper (Gumroad)',
+          why: 'Honest disclosure first: OpenFlow, our own app, needs Apple Silicon, so we cannot recommend it for an Intel Mac. On Intel, MacWhisper is the best way to keep speech recognition local: a one-time purchase that runs Whisper on your Mac. Just know its strength is transcribing recordings; for live dictation into apps, Apple Dictation is the smoother built in path.',
+          runner: 'Runner-up: Apple Dictation, free and built in, though on Intel Macs it processes speech on Apple servers.',
+          soft: soft
+        };
+      }
+      return {
+        name: 'Apple Dictation',
+        url: 'https://support.apple.com/guide/mac-help/use-dictation-mh40584/mac',
+        link: 'Read the Apple Dictation guide',
+        why: 'Honest answer: OpenFlow needs Apple Silicon, so we will not pretend it runs on your Intel Mac. Apple Dictation is already built in, free, and fine for everyday dictation in any app. One caveat: on Intel Macs it processes audio on Apple servers rather than on device.',
+        runner: 'Runner-up: MacWhisper, a one-time purchase that transcribes recordings locally, Intel included.',
+        soft: soft
+      };
+    }
+
+    // Apple Silicon Mac, dictating into apps or long documents.
+    if (localOnly || freeOnly){
+      var why;
+      if (localOnly){
+        why = 'You want your voice to stay on your device, and you mostly ' +
+          (docs ? 'dictate long documents' : 'dictate into apps as you work') +
+          '. That is exactly what OpenFlow was built for: hold a key, speak, release, and the words appear at your cursor, transcribed 100% on your Mac. Yes, we made it, but this is the one case where recommending our own app is simply the honest answer.';
+      } else {
+        why = 'Your budget is free only, and free does not get better than this: OpenFlow is open source, works in every app you type in, and has no word limits and no account. Hold a key, speak, release, done.';
+      }
+      if (docs) why += dragonMacNote;
+      if (global) why += ' You also speak languages beyond the European set: switch OpenFlow to its Whisper Large v3 Turbo engine and it covers about 100 languages, including Chinese, Japanese, Korean, Arabic, and Hindi, all still on device.';
+      return {
+        name: 'OpenFlow',
+        openflow: true,
+        why: why,
+        runner: localOnly
+          ? 'Runner-up: SuperWhisper, if you ever want to pay for extra modes while staying local.'
+          : 'Runner-up: Apple Dictation, already on your Mac, just less accurate and without a custom dictionary.'
+      };
+    }
+
+    if (subOK){
+      return {
+        name: 'Wispr Flow',
+        url: 'https://wisprflow.ai',
+        link: 'Visit wisprflow.ai',
+        why: 'You want maximum polish, cloud processing does not bother you, and a subscription fits the budget. Wispr Flow is the most polished dictation product on the market right now, with smart formatting and apps for Mac, Windows, and iPhone. Full honesty from the maker of OpenFlow: OpenFlow gets you about 90% of that experience for $0, with your voice never leaving your Mac, so consider trying free first.' +
+          (docs ? dragonMacNote : '') +
+          (global ? ' On languages: Wispr Flow handles many via its cloud models, and OpenFlow covers about 100 locally with its Whisper Large v3 Turbo engine.' : ''),
+        runner: 'Runner-up: SuperWhisper, if you would rather pay once and keep processing on your Mac.',
+        soft: soft
+      };
+    }
+
+    // One-time purchase preference on Apple Silicon.
+    return {
+      name: 'SuperWhisper',
+      url: 'https://superwhisper.com',
+      link: 'Visit superwhisper.com',
+      why: 'You would rather pay once than rent software, and SuperWhisper respects that: it offers a lifetime purchase, processes speech on your Mac, and has configurable modes for different apps. Honest note though: OpenFlow does hold-a-key dictation completely free, so you may not need to spend anything at all.' +
+        (docs ? dragonMacNote : '') +
+        (global ? ' It runs Whisper models locally, so Chinese, Japanese, Korean, Arabic, and Hindi are covered too.' : ''),
+      runner: 'Runner-up: MacWhisper, the better one-time buy if transcribing recordings matters more than live dictation.',
+      soft: soft
+    };
+  }
+
+  function render(){
+    var r = recommend(answers);
+    document.getElementById('resultName').textContent = r.name;
+    document.getElementById('resultWhy').textContent = r.why;
+    document.getElementById('resultRunner').textContent = r.runner;
+    var actions = document.getElementById('resultActions');
+    var softEl = document.getElementById('resultSoft');
+    if (r.openflow){
+      actions.innerHTML =
+        '<a class="btn btn-primary" href="https://github.com/Robj1925/open-flow/releases/latest/download/OpenFlow.zip">' + DL_SVG + ' Download OpenFlow free</a>' +
+        '<a class="btn btn-ghost" href="../index.html">See how it works</a>';
+      softEl.textContent = 'Free, open source, MIT licensed. Your voice never leaves your Mac.';
+    } else {
+      actions.innerHTML = '<a class="vendor-link" href="' + r.url + '">' + r.link + ' &rarr;</a>';
+      softEl.textContent = r.soft;
+    }
+  }
+
+  sync();
+})();
+</script>
+</body>
+</html>

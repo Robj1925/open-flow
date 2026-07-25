@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-site-verification" content="r5WcXM0pyY4K82C2E__WblAHcsyXCcNfjlECxPGKRw8" />
+<title>Speech to Text Accuracy Test: Score Your Dictation Accuracy Free</title>
+<meta name="description" content="Read a short passage out loud and see exactly how accurate speech recognition is on your voice. Get a word error rate, an accuracy score, and a word by word diff.">
+<link rel="canonical" href="https://robj1925.github.io/open-flow/tools/speech-to-text-accuracy-test.html">
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://robj1925.github.io/open-flow/tools/speech-to-text-accuracy-test.html">
+<meta property="og:title" content="Speech to Text Accuracy Test">
+<meta property="og:description" content="Read a passage out loud, get scored on accuracy and word error rate, and see exactly which words the machine missed.">
+<meta property="og:image" content="https://robj1925.github.io/open-flow/images/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" type="image/png" sizes="32x32" href="../images/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="../images/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="../images/apple-touch-icon.png">
+
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@600,500&f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tools.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "Speech to Text Accuracy Test",
+      "url": "https://robj1925.github.io/open-flow/tools/speech-to-text-accuracy-test.html",
+      "applicationCategory": "UtilityApplication",
+      "operatingSystem": "Any (runs in the browser)",
+      "description": "Free speech recognition accuracy test. Read a reference passage aloud and get a word error rate, an accuracy percentage, and a word by word diff of what the engine heard.",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "author": { "@type": "Person", "name": "Robby J", "url": "https://automatewithrobby.fyi/" }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "OpenFlow", "item": "https://robj1925.github.io/open-flow/" },
+        { "@type": "ListItem", "position": 2, "name": "Free Tools", "item": "https://robj1925.github.io/open-flow/tools/" },
+        { "@type": "ListItem", "position": 3, "name": "Speech to Text Accuracy Test", "item": "https://robj1925.github.io/open-flow/tools/speech-to-text-accuracy-test.html" }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How accurate is speech to text in 2026?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Modern engines reach roughly 95 to 98 percent accuracy on clear speech in a quiet room. The remaining errors cluster in predictable places: technical vocabulary, proper names, numbers, strong accents, and background noise. Everyday conversational text is close to solved, specialist vocabulary is not." }
+        },
+        {
+          "@type": "Question",
+          "name": "What is word error rate (WER)?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Word error rate is the standard accuracy measure for speech recognition. It adds up substitutions, insertions, and deletions, then divides by the number of words in the reference text. A WER of 5 percent means 95 percent accuracy. This tool computes it by aligning what you read against what the engine heard." }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does dictation get technical words wrong?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Speech models predict likely words, and rare technical terms are unlikely by definition, so the engine substitutes a common word that sounds similar. Apps with a custom dictionary solve this: OpenFlow lets you map what you say to the exact spelling you want, so kubectl comes out as kubectl every time." }
+        },
+        {
+          "@type": "Question",
+          "name": "Does the microphone affect dictation accuracy?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Quite a lot. A quiet room and a decent microphone positioned near your mouth can move accuracy several points. Bluetooth headsets often run at a lower sample rate than a built-in mic, which can make them worse for dictation despite feeling more convenient." }
+        }
+      ]
+    }
+  ]
+}
+</script>
+<style>
+  .passage{
+    font-size:var(--step-1); line-height:1.75; color:var(--ink);
+    background:var(--bg); border:1px solid var(--border); border-radius:12px;
+    padding:1.3rem 1.5rem;
+  }
+  .diff-box{
+    background:var(--bg); border:1px solid var(--border); border-radius:12px;
+    padding:1rem 1.2rem; line-height:1.9; font-size:var(--step--1); color:var(--muted);
+  }
+  .d-miss{ background:oklch(0.68 0.19 25 / .22); color:oklch(0.86 0.12 25); border-radius:4px; padding:.05em .3em; font-weight:600; }
+  .d-extra{ background:oklch(0.83 0.14 85 / .18); color:oklch(0.88 0.12 85); border-radius:4px; padding:.05em .3em; font-weight:600; }
+  .d-ok{ color:var(--faint); }
+  .legend{ display:flex; gap:1.2rem; flex-wrap:wrap; font-size:var(--step--2); color:var(--faint); margin-bottom:.7rem; }
+  .legend span{ display:inline-flex; align-items:center; gap:.4rem; }
+  .swatch{ width:12px; height:12px; border-radius:3px; display:inline-block; }
+  .rec-wrap{ display:flex; flex-direction:column; align-items:center; gap:.9rem; }
+  .status{ font-size:var(--step--1); color:var(--muted); min-height:1.5em; text-align:center; }
+</style>
+</head>
+<body>
+<div class="glow" aria-hidden="true"></div>
+
+<header class="nav">
+  <div class="wrap nav-inner">
+    <a class="brand" href="../index.html" aria-label="OpenFlow home">
+      <img class="logo" src="../images/icon.png" alt="" width="30" height="30" onerror="this.style.display='none'">
+      OpenFlow
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="index.html">All free tools</a>
+      <a href="../index.html#features">Features</a>
+      <a href="https://github.com/Robj1925/open-flow">GitHub</a>
+    </nav>
+    <a class="btn btn-primary btn-sm nav-cta" href="https://github.com/Robj1925/open-flow/releases/latest/download/OpenFlow.zip">Download</a>
+  </div>
+</header>
+
+<main>
+  <div class="wrap-narrow">
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a href="../index.html">OpenFlow</a> <span class="sep">/</span>
+      <a href="index.html">Free tools</a> <span class="sep">/</span>
+      <span>Speech to text accuracy test</span>
+    </nav>
+
+    <section class="tool-hero">
+      <h1>Speech to text accuracy test</h1>
+      <p class="sub">Read a short passage out loud. We compare what you said with what the machine heard, then score it word by word.</p>
+    </section>
+
+    <div id="unsupported" class="notice warn" style="display:none">
+      <span aria-hidden="true">&#9888;</span>
+      <span>This test needs the browser speech recognition API, which <b>Chrome, Edge, and Safari</b> support. Firefox does not have it yet. Open this page in one of those browsers to run the test.</span>
+    </div>
+
+    <div id="tool">
+      <section class="panel" aria-label="Accuracy test">
+        <div class="field" style="margin-bottom:1.2rem">
+          <label id="passLabel">Pick a passage</label>
+          <div class="seg" role="group" aria-labelledby="passLabel">
+            <button type="button" data-p="0" class="active">Everyday</button>
+            <button type="button" data-p="1">Technical</button>
+            <button type="button" data-p="2">Numbers and names</button>
+          </div>
+        </div>
+
+        <p class="passage" id="passage"></p>
+
+        <div class="rec-wrap" style="margin-top:1.6rem">
+          <button class="rec-btn" id="rec" type="button" aria-label="Start reading the passage">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3z"/><path d="M19 11a1 1 0 1 0-2 0 5 5 0 0 1-10 0 1 1 0 1 0-2 0 7 7 0 0 0 6 6.92V21H8a1 1 0 1 0 0 2h8a1 1 0 1 0 0-2h-3v-3.08A7 7 0 0 0 19 11z"/></svg>
+          </button>
+          <p class="status" id="status" aria-live="polite">Click the mic, then read the passage out loud at a natural pace.</p>
+        </div>
+      </section>
+
+      <section class="panel" id="results" style="display:none" aria-label="Results">
+        <div style="text-align:center">
+          <div class="big-num" id="acc">0%</div>
+          <div class="big-label">accuracy on this passage</div>
+        </div>
+
+        <div class="stat-row" style="margin-top:1.6rem">
+          <div class="stat"><div class="n" id="sRef">0</div><div class="l">words in the passage</div></div>
+          <div class="stat good"><div class="n" id="sOk">0</div><div class="l">heard correctly</div></div>
+          <div class="stat bad"><div class="n" id="sMiss">0</div><div class="l">missed or wrong</div></div>
+          <div class="stat warn"><div class="n" id="sExtra">0</div><div class="l">extra words</div></div>
+        </div>
+
+        <div class="stat-row" style="margin-top:1rem">
+          <div class="stat accent"><div class="n" id="sGrade">A</div><div class="l">grade</div></div>
+          <div class="stat"><div class="n" id="sWer">0%</div><div class="l">word error rate</div></div>
+        </div>
+
+        <div style="margin-top:1.6rem">
+          <div class="legend">
+            <span><i class="swatch" style="background:oklch(0.68 0.19 25 / .5)"></i> Missed or misheard</span>
+            <span><i class="swatch" style="background:oklch(0.83 0.14 85 / .45)"></i> Words it added</span>
+          </div>
+          <p style="font-size:var(--step--1); color:var(--muted); font-weight:600; margin-bottom:.5rem">The passage, with what it missed</p>
+          <div class="diff-box" id="diffRef"></div>
+          <p style="font-size:var(--step--1); color:var(--muted); font-weight:600; margin:1rem 0 .5rem">What the engine actually heard</p>
+          <div class="diff-box" id="diffHyp"></div>
+        </div>
+
+        <button class="btn btn-ghost" id="again" type="button" style="margin-top:1.4rem">Try again</button>
+      </section>
+
+      <p class="notice" style="margin-top:1.2rem">
+        <span aria-hidden="true">&#128161;</span>
+        <span>You just tested <b>your browser's</b> speech engine, which usually transcribes in the cloud. On-device models have caught up: OpenFlow runs NVIDIA's Parakeet locally and is known for nailing technical vocabulary. Try the technical passage above, see what your browser missed, then <a href="../index.html" style="color:var(--teal)">read how OpenFlow handles it</a>.</span>
+      </p>
+    </div>
+
+    <section class="band" aria-label="FAQ">
+      <div class="section-head"><h2>Questions people ask</h2></div>
+      <div class="faq">
+        <details>
+          <summary>How accurate is speech to text in 2026?</summary>
+          <p>Modern engines reach roughly 95 to 98 percent accuracy on clear speech in a quiet room. The remaining errors cluster in predictable places: technical vocabulary, proper names, numbers, strong accents, and background noise. Everyday conversational text is close to solved. Specialist vocabulary is not.</p>
+        </details>
+        <details>
+          <summary>What is word error rate (WER)?</summary>
+          <p>Word error rate is the standard accuracy measure for speech recognition. It adds up substitutions, insertions, and deletions, then divides by the number of words in the reference text. A WER of 5 percent means 95 percent accuracy. This tool computes it by aligning what you read against what the engine heard.</p>
+        </details>
+        <details>
+          <summary>Why does dictation get technical words wrong?</summary>
+          <p>Speech models predict likely words, and rare technical terms are unlikely by definition, so the engine substitutes a common word that sounds similar. Apps with a custom dictionary solve this: <a href="../index.html">OpenFlow</a> lets you map what you say to the exact spelling you want, so kubectl comes out as kubectl every time.</p>
+        </details>
+        <details>
+          <summary>Does the microphone affect dictation accuracy?</summary>
+          <p>Quite a lot. A quiet room and a decent mic near your mouth can move accuracy several points. Bluetooth headsets often run at a lower sample rate than a built-in mic, which can make them worse for dictation despite feeling more convenient.</p>
+        </details>
+      </div>
+    </section>
+
+    <section class="of-cta" aria-label="Download OpenFlow">
+      <h2>Accuracy is one thing. Getting the words into your app is another.</h2>
+      <p>OpenFlow transcribes on your Mac with NVIDIA's Parakeet model, drops the text straight at your cursor in any app, and lets you teach it the exact spelling of your jargon. Free and open source.</p>
+      <div class="btns">
+        <a class="btn btn-primary" href="https://github.com/Robj1925/open-flow/releases/latest/download/OpenFlow.zip">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3v10.6l3.3-3.3 1.4 1.4L12 17.4 6.3 11.7l1.4-1.4L11 13.6V3h1zM5 19h14v2H5z"/></svg>
+          Download OpenFlow free
+        </a>
+        <a class="btn btn-ghost" href="../index.html">See how it works</a>
+      </div>
+      <p class="fine">Apple Silicon, macOS 14 or later. Nothing is uploaded, ever.</p>
+    </section>
+
+    <section class="band" aria-label="More tools" style="padding-bottom:0">
+      <div class="section-head"><h2>More free tools</h2></div>
+      <div class="tools-grid">
+        <a class="tool-card" href="voice-typing.html"><span class="kicker">Dictation</span><h3>Voice typing in your browser</h3><p>Dictate into a text box for free. No signup, nothing installed.</p><span class="go">Open the tool &rarr;</span></a>
+        <a class="tool-card" href="dictation-app-picker.html"><span class="kicker">Picker</span><h3>Which dictation app should I use?</h3><p>Five honest questions, one recommendation, full comparison table.</p><span class="go">Open the tool &rarr;</span></a>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap foot-inner">
+    <a class="brand" href="../index.html">
+      <img class="logo" src="../images/icon.png" alt="" width="26" height="26" style="width:26px;height:26px" onerror="this.style.display='none'">
+      OpenFlow
+    </a>
+    <span>MIT licensed. Built with Swift.</span>
+    <div class="foot-links">
+      <a href="index.html">Free tools</a>
+      <a href="https://github.com/Robj1925/open-flow">GitHub</a>
+      <a href="https://github.com/Robj1925/open-flow/releases">Releases</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR){
+    document.getElementById('unsupported').style.display = '';
+    document.getElementById('tool').style.display = 'none';
+    return;
+  }
+
+  const PASSAGES = [
+    "The morning light came through the kitchen window while the coffee finished brewing. She read the first few pages of a book she had been meaning to start for months, then set it down and looked out at the garden. It was going to be a quiet day, and she was glad about that.",
+    "Run npm install first, then apply the migration with kubectl before restarting the pod. The PostgreSQL query was slow until we added an index, and the OAuth token refresh now happens inside an async await block. Check the JSON response for the status field before you deploy to Kubernetes.",
+    "On March 14th, 2026, Maria Gonzalez paid $1,249.99 for the flight to Reykjavik. Her confirmation number was 8675309 and the meeting with Dr. Patel starts at 3:45 in the afternoon. Call 555 0134 if the schedule changes before Thursday."
+  ];
+
+  const passage = document.getElementById('passage');
+  const seg = document.querySelector('.seg');
+  const rec = document.getElementById('rec');
+  const status = document.getElementById('status');
+  const results = document.getElementById('results');
+  const again = document.getElementById('again');
+
+  let current = 0;
+  let recognition = null;
+  let listening = false;
+  let finalText = '';
+  let idleTimer = null;
+
+  passage.textContent = PASSAGES[current];
+
+  seg.addEventListener('click', e => {
+    const btn = e.target.closest('button[data-p]');
+    if (!btn || listening) return;
+    seg.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    current = parseInt(btn.dataset.p, 10);
+    passage.textContent = PASSAGES[current];
+    results.style.display = 'none';
+    status.textContent = 'Click the mic, then read the passage out loud at a natural pace.';
+  });
+
+  const escapeHtml = s => s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+  // Normalize for scoring: lowercase, drop punctuation, collapse whitespace.
+  function words(text){
+    return text.toLowerCase()
+      .replace(/[^\w\s'’]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .split(' ')
+      .filter(Boolean);
+  }
+
+  // Word-level Levenshtein with backtrace, so we can show which words went wrong.
+  function align(ref, hyp){
+    const n = ref.length, m = hyp.length;
+    const d = Array.from({length: n + 1}, () => new Int32Array(m + 1));
+    for (let i = 0; i <= n; i++) d[i][0] = i;
+    for (let j = 0; j <= m; j++) d[0][j] = j;
+    for (let i = 1; i <= n; i++){
+      for (let j = 1; j <= m; j++){
+        const cost = ref[i-1] === hyp[j-1] ? 0 : 1;
+        d[i][j] = Math.min(d[i-1][j] + 1, d[i][j-1] + 1, d[i-1][j-1] + cost);
+      }
+    }
+    const ops = [];
+    let i = n, j = m;
+    while (i > 0 || j > 0){
+      if (i > 0 && j > 0 && d[i][j] === d[i-1][j-1] + (ref[i-1] === hyp[j-1] ? 0 : 1)){
+        ops.push({op: ref[i-1] === hyp[j-1] ? 'ok' : 'sub', r: i-1, h: j-1});
+        i--; j--;
+      } else if (i > 0 && d[i][j] === d[i-1][j] + 1){
+        ops.push({op: 'del', r: i-1, h: -1}); i--;
+      } else {
+        ops.push({op: 'ins', r: -1, h: j-1}); j--;
+      }
+    }
+    ops.reverse();
+    return ops;
+  }
+
+  function gradeFor(acc){
+    if (acc >= 98) return ['A+', 'good'];
+    if (acc >= 95) return ['A', 'good'];
+    if (acc >= 90) return ['B', 'accent'];
+    if (acc >= 80) return ['C', 'warn'];
+    if (acc >= 70) return ['D', 'warn'];
+    return ['F', 'bad'];
+  }
+
+  function score(){
+    const ref = words(PASSAGES[current]);
+    const hyp = words(finalText);
+    if (!hyp.length){
+      status.textContent = 'We did not catch anything. Check your mic permission and try again.';
+      return;
+    }
+    const ops = align(ref, hyp);
+    let ok = 0, sub = 0, del = 0, ins = 0;
+    for (const o of ops){
+      if (o.op === 'ok') ok++;
+      else if (o.op === 'sub') sub++;
+      else if (o.op === 'del') del++;
+      else ins++;
+    }
+    const wer = (sub + del + ins) / Math.max(ref.length, 1);
+    const acc = Math.max(0, (1 - wer) * 100);
+    const [letter, tone] = gradeFor(acc);
+
+    document.getElementById('acc').textContent = acc.toFixed(1) + '%';
+    document.getElementById('sRef').textContent = ref.length;
+    document.getElementById('sOk').textContent = ok;
+    document.getElementById('sMiss').textContent = sub + del;
+    document.getElementById('sExtra').textContent = ins;
+    document.getElementById('sWer').textContent = (wer * 100).toFixed(1) + '%';
+    const gradeEl = document.getElementById('sGrade');
+    gradeEl.textContent = letter;
+    gradeEl.parentElement.className = 'stat ' + tone;
+
+    // Reference line: mark substituted and deleted words.
+    const refHtml = [];
+    const hypHtml = [];
+    for (const o of ops){
+      if (o.op === 'ok'){
+        refHtml.push('<span class="d-ok">' + escapeHtml(ref[o.r]) + '</span>');
+        hypHtml.push('<span class="d-ok">' + escapeHtml(hyp[o.h]) + '</span>');
+      } else if (o.op === 'sub'){
+        refHtml.push('<span class="d-miss">' + escapeHtml(ref[o.r]) + '</span>');
+        hypHtml.push('<span class="d-miss">' + escapeHtml(hyp[o.h]) + '</span>');
+      } else if (o.op === 'del'){
+        refHtml.push('<span class="d-miss">' + escapeHtml(ref[o.r]) + '</span>');
+      } else {
+        hypHtml.push('<span class="d-extra">' + escapeHtml(hyp[o.h]) + '</span>');
+      }
+    }
+    document.getElementById('diffRef').innerHTML = refHtml.join(' ');
+    document.getElementById('diffHyp').innerHTML = hypHtml.join(' ');
+
+    results.style.display = '';
+    status.textContent = 'Scored. Read it again any time, or switch passages above.';
+    results.scrollIntoView({behavior: 'smooth', block: 'nearest'});
+  }
+
+  function stop(){
+    if (!listening) return;
+    listening = false;
+    clearTimeout(idleTimer);
+    rec.classList.remove('recording');
+    rec.setAttribute('aria-label', 'Start reading the passage');
+    try { recognition.stop(); } catch(e){}
+    score();
+  }
+
+  function armIdleStop(){
+    clearTimeout(idleTimer);
+    // Auto-finish 8 seconds after the last thing we heard.
+    idleTimer = setTimeout(stop, 8000);
+  }
+
+  function start(){
+    finalText = '';
+    results.style.display = 'none';
+    recognition = new SR();
+    recognition.lang = 'en-US';
+    recognition.continuous = true;
+    recognition.interimResults = true;
+
+    recognition.onresult = e => {
+      for (let i = e.resultIndex; i < e.results.length; i++){
+        if (e.results[i].isFinal) finalText += e.results[i][0].transcript + ' ';
+      }
+      armIdleStop();
+    };
+    recognition.onerror = e => {
+      if (e.error === 'no-speech') return;
+      listening = false;
+      rec.classList.remove('recording');
+      status.textContent = e.error === 'not-allowed'
+        ? 'Microphone blocked. Allow mic access for this page in your browser, then try again.'
+        : 'Speech recognition error: ' + e.error;
+    };
+    // Chrome ends the session on its own after a pause, so restart while testing.
+    recognition.onend = () => { if (listening) { try { recognition.start(); } catch(e){} } };
+
+    listening = true;
+    rec.classList.add('recording');
+    rec.setAttribute('aria-label', 'Stop and score');
+    status.textContent = 'Listening. Read the passage, then click again to score (it also stops on its own).';
+    try { recognition.start(); } catch(e){}
+    armIdleStop();
+  }
+
+  rec.addEventListener('click', () => listening ? stop() : start());
+  again.addEventListener('click', () => { results.style.display = 'none'; start(); });
+})();
+</script>
+</body>
+</html>
