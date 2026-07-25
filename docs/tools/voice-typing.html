@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-site-verification" content="r5WcXM0pyY4K82C2E__WblAHcsyXCcNfjlECxPGKRw8" />
+<title>Free Online Voice Typing: Speech to Text in Your Browser</title>
+<meta name="description" content="Free online voice typing: click the mic, speak, and your words appear as text right in your browser. No signup, no install, no word limits. Works in Chrome, Edge, and Safari.">
+<link rel="canonical" href="https://robj1925.github.io/open-flow/tools/voice-typing.html">
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://robj1925.github.io/open-flow/tools/voice-typing.html">
+<meta property="og:title" content="Free Online Voice Typing">
+<meta property="og:description" content="Click the mic, talk, and watch your words appear. Free speech to text in your browser: no signup, no install, no word limits.">
+<meta property="og:image" content="https://robj1925.github.io/open-flow/images/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" type="image/png" sizes="32x32" href="../images/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="../images/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="../images/apple-touch-icon.png">
+
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@600,500&f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tools.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "Free Online Voice Typing",
+      "url": "https://robj1925.github.io/open-flow/tools/voice-typing.html",
+      "applicationCategory": "UtilityApplication",
+      "operatingSystem": "Any (runs in the browser)",
+      "description": "Free voice typing tool that turns your speech into text right in the browser. Click the mic, talk, and your words appear. No signup, no install, no word limits.",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "author": { "@type": "Person", "name": "Robby J", "url": "https://automatewithrobby.fyi/" }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "OpenFlow", "item": "https://robj1925.github.io/open-flow/" },
+        { "@type": "ListItem", "position": 2, "name": "Free Tools", "item": "https://robj1925.github.io/open-flow/tools/" },
+        { "@type": "ListItem", "position": 3, "name": "Voice Typing", "item": "https://robj1925.github.io/open-flow/tools/voice-typing.html" }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Is this voice typing tool really free?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. It is completely free and unlimited, with no account and no signup. It uses the speech recognition already built into your browser, so there is nothing to pay for and no word cap to hit." }
+        },
+        {
+          "@type": "Question",
+          "name": "Does it work offline?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No. In most browsers the speech recognition runs in the cloud, so you need an internet connection. For offline dictation you need an on-device app like OpenFlow, which transcribes everything locally on your Mac, with no audio ever leaving your machine." }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does it stop listening by itself?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Browsers pause speech recognition after a stretch of silence, and some cap how long a single session can run. This tool restarts recognition automatically the moment the browser stops it, so you can keep talking and your words keep flowing until you press stop." }
+        },
+        {
+          "@type": "Question",
+          "name": "Which browsers work best?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Chrome and Edge are the most reliable, since Google's speech engine backs both. Safari works on a Mac. Firefox does not support voice typing yet, so use one of the others for this tool." }
+        }
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<div class="glow" aria-hidden="true"></div>
+
+<header class="nav">
+  <div class="wrap nav-inner">
+    <a class="brand" href="../index.html" aria-label="OpenFlow home">
+      <img class="logo" src="../images/icon.png" alt="" width="30" height="30" onerror="this.style.display='none'">
+      OpenFlow
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="index.html">All free tools</a>
+      <a href="../index.html#features">Features</a>
+      <a href="https://github.com/Robj1925/open-flow">GitHub</a>
+    </nav>
+    <a class="btn btn-primary btn-sm nav-cta" href="https://github.com/Robj1925/open-flow/releases/latest/download/OpenFlow.zip">Download</a>
+  </div>
+</header>
+
+<main>
+  <div class="wrap-narrow">
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a href="../index.html">OpenFlow</a> <span class="sep">/</span>
+      <a href="index.html">Free tools</a> <span class="sep">/</span>
+      <span>Voice typing</span>
+    </nav>
+
+    <section class="tool-hero">
+      <h1>Voice typing, right in your browser</h1>
+      <p class="sub">Click the mic, talk, and watch your words appear in the box. Free, no signup, nothing installed.</p>
+    </section>
+
+    <div class="notice warn" id="unsupported" style="display:none" role="alert">
+      <span aria-hidden="true">&#9888;&#65039;</span>
+      <span><b>Your browser does not support voice typing.</b> This tool uses the speech recognition built into Chrome, Edge, and Safari. Firefox does not support voice typing yet. Open this page in Chrome, Edge, or Safari and the mic will appear.</span>
+    </div>
+
+    <section class="panel" id="toolPanel" aria-label="Voice typing tool">
+      <div class="field" style="max-width:340px">
+        <label for="lang">Language</label>
+        <select id="lang">
+          <option value="en-US" selected>English (US)</option>
+          <option value="en-GB">English (UK)</option>
+          <option value="es-ES">Spanish (Spain)</option>
+          <option value="es-MX">Spanish (Mexico)</option>
+          <option value="fr-FR">French</option>
+          <option value="de-DE">German</option>
+          <option value="it-IT">Italian</option>
+          <option value="pt-BR">Portuguese (Brazil)</option>
+          <option value="nl-NL">Dutch</option>
+          <option value="ja-JP">Japanese</option>
+          <option value="ko-KR">Korean</option>
+          <option value="zh-CN">Chinese (Mandarin)</option>
+          <option value="hi-IN">Hindi</option>
+          <option value="ru-RU">Russian</option>
+        </select>
+        <span class="hint">Pick the language you will speak. You can switch it any time.</span>
+      </div>
+
+      <div style="text-align:center; margin-top:1.8rem">
+        <button class="rec-btn" id="recBtn" type="button" aria-pressed="false" aria-label="Start voice typing" style="margin-inline:auto">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 15a3.5 3.5 0 0 0 3.5-3.5v-6a3.5 3.5 0 0 0-7 0v6A3.5 3.5 0 0 0 12 15zm6.5-3.5a6.5 6.5 0 0 1-13 0H3.6a8.4 8.4 0 0 0 7.4 8.33V22h2v-2.17a8.4 8.4 0 0 0 7.4-8.33h-1.9z"/></svg>
+        </button>
+        <p id="status" role="status" aria-live="polite" style="margin-top:.9rem; color:var(--muted); font-size:var(--step--1)">Click the mic and start talking</p>
+      </div>
+
+      <div class="notice warn" id="micError" style="display:none; margin-top:1.2rem">
+        <span aria-hidden="true">&#128263;</span>
+        <span><b>Microphone access is blocked.</b> Your browser refused mic access for this page. Click the mic or lock icon in the address bar, allow the microphone for this site, then press the button again.</span>
+      </div>
+
+      <div class="field" style="margin-top:1.6rem">
+        <label for="output">Your text</label>
+        <textarea id="output" rows="9" placeholder="Your words will appear here. You can edit them like any other text."></textarea>
+      </div>
+      <p id="interim" aria-hidden="true" style="min-height:1.6em; margin:.5rem 0 0; color:var(--faint); font-style:italic; font-size:var(--step--1)"></p>
+
+      <div style="display:flex; gap:.7rem; flex-wrap:wrap; align-items:center; margin-top:1rem">
+        <span class="chip"><b id="wordCount">0</b> words</span>
+        <span class="chip"><b id="charCount">0</b> characters</span>
+        <span style="flex:1 1 auto"></span>
+        <button class="btn btn-ghost btn-sm" id="copyBtn" type="button">Copy</button>
+        <button class="btn btn-ghost btn-sm" id="downloadBtn" type="button">Download .txt</button>
+        <button class="btn btn-ghost btn-sm" id="clearBtn" type="button">Clear</button>
+      </div>
+    </section>
+
+    <p class="notice" style="margin-top:1.4rem">
+      <span aria-hidden="true">&#128161;</span>
+      <span><b>Heads up:</b> your browser's built-in speech recognition may send audio to Google or Apple servers to transcribe it. Want dictation that runs 100% on your Mac and works in every app, not just this tab? That is <a href="../index.html" style="color:var(--teal)">OpenFlow</a>.</span>
+    </p>
+
+    <section class="band" aria-label="How it works">
+      <div class="section-head">
+        <h2>How this voice typing tool works</h2>
+        <p>It uses the Web Speech API, the speech recognition your browser already ships with. Nothing to download, nothing to sign up for, and your text never touches our servers (there are none).</p>
+      </div>
+      <div class="grid-3">
+        <div class="panel" style="padding:1.2rem 1.4rem">
+          <h3 style="font-size:var(--step-0)">1. Pick a language</h3>
+          <p style="color:var(--muted); font-size:var(--step--1); margin-top:.5rem">Fourteen locales, from US English to Japanese. The recognizer listens in the language you choose.</p>
+        </div>
+        <div class="panel" style="padding:1.2rem 1.4rem">
+          <h3 style="font-size:var(--step-0)">2. Click the mic and talk</h3>
+          <p style="color:var(--muted); font-size:var(--step--1); margin-top:.5rem">Speak naturally. A live preview shows words as you say them, then the final text lands in the box.</p>
+        </div>
+        <div class="panel" style="padding:1.2rem 1.4rem">
+          <h3 style="font-size:var(--step-0)">3. Edit, copy, download</h3>
+          <p style="color:var(--muted); font-size:var(--step--1); margin-top:.5rem">The box is a normal text field. Fix anything, then copy it or save it as a .txt file.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="band" aria-label="FAQ" style="padding-top:0">
+      <div class="section-head">
+        <h2>Fair questions</h2>
+      </div>
+      <div class="faq">
+        <details>
+          <summary>Is this voice typing tool really free?</summary>
+          <p>Yes. It is completely free and unlimited, with no account and no signup. It uses the speech recognition already built into your browser, so there is nothing to pay for and no word cap to hit.</p>
+        </details>
+        <details>
+          <summary>Does it work offline?</summary>
+          <p>No. In most browsers the speech recognition runs in the cloud, so you need an internet connection. For offline dictation you need an on-device app like <a href="../index.html">OpenFlow</a>, which transcribes everything locally on your Mac, with no audio ever leaving your machine.</p>
+        </details>
+        <details>
+          <summary>Why does it stop listening by itself?</summary>
+          <p>Browsers pause speech recognition after a stretch of silence, and some cap how long a single session can run. This tool restarts recognition automatically the moment the browser stops it, so you can keep talking and your words keep flowing until you press stop.</p>
+        </details>
+        <details>
+          <summary>Which browsers work best?</summary>
+          <p>Chrome and Edge are the most reliable, since Google's speech engine backs both. Safari works on a Mac. Firefox does not support voice typing yet, so use one of the others for this tool.</p>
+        </details>
+      </div>
+    </section>
+
+    <section class="of-cta" aria-label="Download OpenFlow">
+      <h2>Voice typing in every app, not just this tab</h2>
+      <p>OpenFlow gives you hold-a-key dictation anywhere on your Mac, transcribed 100% on device. No cloud, no account, no subscription. Free forever, open source, and your voice never leaves your machine.</p>
+      <div class="btns">
+        <a class="btn btn-primary" href="https://github.com/Robj1925/open-flow/releases/latest/download/OpenFlow.zip">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3v10.6l3.3-3.3 1.4 1.4L12 17.4 6.3 11.7l1.4-1.4L11 13.6V3h1zM5 19h14v2H5z"/></svg>
+          Download OpenFlow free
+        </a>
+        <a class="btn btn-ghost" href="../index.html">See how it works</a>
+      </div>
+      <p class="fine">Apple Silicon, macOS 14 or later. About two minutes from download to first dictation.</p>
+    </section>
+
+    <section class="band" aria-label="More tools" style="padding-bottom:0">
+      <div class="section-head"><h2>More free tools</h2></div>
+      <div class="tools-grid">
+        <a class="tool-card" href="speech-to-text-accuracy-test.html"><span class="kicker">Test</span><h3>Speech to text accuracy test</h3><p>Read a short passage out loud and get scored on how well speech recognition heard you.</p><span class="go">Open the tool &rarr;</span></a>
+        <a class="tool-card" href="voice-recorder.html"><span class="kicker">Recorder</span><h3>Online voice recorder</h3><p>Record audio in your browser and download it. Nothing uploads, everything stays on your device.</p><span class="go">Open the tool &rarr;</span></a>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap foot-inner">
+    <a class="brand" href="../index.html">
+      <img class="logo" src="../images/icon.png" alt="" width="26" height="26" style="width:26px;height:26px" onerror="this.style.display='none'">
+      OpenFlow
+    </a>
+    <span>MIT licensed. Built with Swift.</span>
+    <div class="foot-links">
+      <a href="index.html">Free tools</a>
+      <a href="https://github.com/Robj1925/open-flow">GitHub</a>
+      <a href="https://github.com/Robj1925/open-flow/releases">Releases</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const panel = document.getElementById('toolPanel');
+  const unsupported = document.getElementById('unsupported');
+  const recBtn = document.getElementById('recBtn');
+  const statusEl = document.getElementById('status');
+  const langSel = document.getElementById('lang');
+  const output = document.getElementById('output');
+  const interimEl = document.getElementById('interim');
+  const wordCountEl = document.getElementById('wordCount');
+  const charCountEl = document.getElementById('charCount');
+  const copyBtn = document.getElementById('copyBtn');
+  const downloadBtn = document.getElementById('downloadBtn');
+  const clearBtn = document.getElementById('clearBtn');
+  const micError = document.getElementById('micError');
+
+  if (!SR){
+    panel.style.display = 'none';
+    unsupported.style.display = '';
+    return;
+  }
+
+  let recognition = null;
+  let listening = false; // true while the user wants the mic on
+
+  function setStatus(msg){ statusEl.textContent = msg; }
+
+  function updateCounts(){
+    const text = output.value;
+    const trimmed = text.trim();
+    wordCountEl.textContent = trimmed ? String(trimmed.split(/\s+/).length) : '0';
+    charCountEl.textContent = String(text.length);
+  }
+
+  function appendFinal(t){
+    t = t.trim();
+    if (!t) return;
+    const cur = output.value;
+    output.value = cur + (cur && !/\s$/.test(cur) ? ' ' : '') + t;
+    output.scrollTop = output.scrollHeight;
+    updateCounts();
+  }
+
+  function stopUI(){
+    recBtn.classList.remove('recording');
+    recBtn.setAttribute('aria-pressed', 'false');
+    recBtn.setAttribute('aria-label', 'Start voice typing');
+    interimEl.textContent = '';
+  }
+
+  function startUI(){
+    micError.style.display = 'none';
+    recBtn.classList.add('recording');
+    recBtn.setAttribute('aria-pressed', 'true');
+    recBtn.setAttribute('aria-label', 'Stop voice typing');
+  }
+
+  function createRecognition(){
+    const rec = new SR();
+    rec.continuous = true;
+    rec.interimResults = true;
+    rec.lang = langSel.value;
+
+    rec.onstart = function(){
+      if (listening) setStatus('Listening...');
+    };
+
+    rec.onresult = function(e){
+      let interim = '';
+      for (let i = e.resultIndex; i < e.results.length; i++){
+        const r = e.results[i];
+        if (r.isFinal){
+          appendFinal(r[0].transcript);
+        } else {
+          interim += r[0].transcript;
+        }
+      }
+      interimEl.textContent = interim;
+    };
+
+    // Browsers end recognition on their own after silence.
+    // If the user has not pressed stop, start it right back up.
+    rec.onend = function(){
+      interimEl.textContent = '';
+      if (listening){
+        rec.lang = langSel.value;
+        try {
+          rec.start();
+        } catch (err){
+          setTimeout(function(){
+            if (listening){
+              try { rec.start(); } catch (err2){ /* give up quietly */ }
+            }
+          }, 200);
+        }
+      } else {
+        stopUI();
+      }
+    };
+
+    rec.onerror = function(e){
+      if (e.error === 'no-speech' || e.error === 'aborted') return; // harmless
+      if (e.error === 'not-allowed' || e.error === 'service-not-allowed'){
+        listening = false;
+        stopUI();
+        micError.style.display = '';
+        setStatus('Microphone access is blocked. Allow the mic for this site, then try again.');
+        return;
+      }
+      if (e.error === 'audio-capture'){
+        listening = false;
+        stopUI();
+        setStatus('No microphone was found. Plug one in or check your input device, then try again.');
+      }
+    };
+
+    return rec;
+  }
+
+  recBtn.addEventListener('click', function(){
+    if (listening){
+      listening = false;
+      stopUI();
+      setStatus('Stopped');
+      if (recognition){
+        try { recognition.stop(); } catch (err){ /* already stopped */ }
+      }
+    } else {
+      listening = true;
+      if (!recognition) recognition = createRecognition();
+      recognition.lang = langSel.value;
+      startUI();
+      setStatus('Listening...');
+      try { recognition.start(); } catch (err){ /* already started */ }
+    }
+  });
+
+  // Changing language mid-session: stop the recognizer and let
+  // onend restart it with the new locale.
+  langSel.addEventListener('change', function(){
+    if (listening && recognition){
+      try { recognition.stop(); } catch (err){ /* ignore */ }
+    }
+  });
+
+  output.addEventListener('input', updateCounts);
+
+  copyBtn.addEventListener('click', function(){
+    const text = output.value;
+    const done = function(){
+      copyBtn.textContent = 'Copied';
+      setTimeout(function(){ copyBtn.textContent = 'Copy'; }, 1500);
+    };
+    const fallback = function(){
+      output.focus();
+      output.select();
+      try {
+        document.execCommand('copy');
+        done();
+      } catch (err){ /* nothing more we can do */ }
+      output.setSelectionRange(text.length, text.length);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(done, fallback);
+    } else {
+      fallback();
+    }
+  });
+
+  downloadBtn.addEventListener('click', function(){
+    const blob = new Blob([output.value], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'voice-typing.txt';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+  });
+
+  clearBtn.addEventListener('click', function(){
+    output.value = '';
+    interimEl.textContent = '';
+    updateCounts();
+    output.focus();
+  });
+
+  updateCounts();
+})();
+</script>
+</body>
+</html>

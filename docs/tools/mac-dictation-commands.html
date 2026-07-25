@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-site-verification" content="r5WcXM0pyY4K82C2E__WblAHcsyXCcNfjlECxPGKRw8" />
+<title>Mac Dictation Commands: The Searchable Cheat Sheet (macOS)</title>
+<meta name="description" content="Every Apple Dictation command on macOS in one searchable table: what to say for punctuation, symbols, currency and math, formatting, and emoji. Filter it, print it, keep it.">
+<link rel="canonical" href="https://robj1925.github.io/open-flow/tools/mac-dictation-commands.html">
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://robj1925.github.io/open-flow/tools/mac-dictation-commands.html">
+<meta property="og:title" content="Mac Dictation Commands Cheat Sheet">
+<meta property="og:description" content="What to say to get punctuation, symbols, and formatting with Apple's built-in dictation. Searchable, filterable, and printable.">
+<meta property="og:image" content="https://robj1925.github.io/open-flow/images/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" type="image/png" sizes="32x32" href="../images/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="../images/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="../images/apple-touch-icon.png">
+
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@600,500&f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tools.css">
+
+<style>
+/* page-specific bits */
+.cmd-controls{ display:flex; gap:1rem; align-items:flex-end; flex-wrap:wrap; }
+.cmd-controls .field{ flex:1 1 240px; }
+.cmd-controls .btn{ flex:none; }
+#cmdCount{ margin-top:.8rem; font-size:var(--step--2); color:var(--faint); }
+table.cmp td.say{ font-weight:500; white-space:nowrap; }
+table.cmp td.get .chr{ font-family:ui-monospace,"SF Mono",Menlo,monospace; font-size:1.05em; color:var(--teal); }
+table.cmp td.get .expl{ color:var(--faint); font-size:var(--step--2); margin-left:.5rem; }
+table.cmp tr.cat-row th{
+  background:var(--bg-2); color:var(--azure); font-weight:600; text-align:left;
+  font-size:var(--step--2); text-transform:uppercase; letter-spacing:.07em;
+  padding:.55rem 1rem; border-bottom:1px solid var(--border);
+}
+.steps{ margin:0; padding-left:1.3rem; display:grid; gap:.7rem; color:var(--muted); font-size:var(--step-0); }
+.steps li::marker{ color:var(--azure); font-weight:600; }
+.steps b{ color:var(--ink); }
+
+/* print: just the cheat sheet, black on white */
+@media print{
+  body{ background:#fff; color:#000; font-size:11pt; }
+  .glow, header.nav, .crumbs, .cmd-controls, #catSeg, #cmdCount, .notice,
+  .of-cta, #faq, #more-tools, footer{ display:none !important; }
+  .tool-hero{ padding:0 0 .8rem; }
+  .tool-hero h1, .tool-hero .sub, h2, .steps, .steps b{ color:#000; }
+  .tool-hero .sub{ font-size:12pt; }
+  .panel{ background:none; border:none; padding:0; }
+  .band{ padding-block:1rem; }
+  .table-scroll{ overflow:visible; border:1px solid #000; border-radius:0; }
+  table.cmp{ min-width:0; }
+  table.cmp th, table.cmp td{ color:#000; border-bottom:1px solid #888; padding:.3rem .6rem; }
+  table.cmp thead th{ background:#fff; }
+  table.cmp tr.cat-row th{ background:#fff; color:#000; border-bottom:1px solid #000; }
+  table.cmp td.get .chr{ color:#000; }
+  table.cmp td.get .expl{ color:#333; }
+  table.cmp tr{ break-inside:avoid; }
+  a{ color:#000; text-decoration:none; }
+}
+</style>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "Mac Dictation Commands Cheat Sheet",
+      "url": "https://robj1925.github.io/open-flow/tools/mac-dictation-commands.html",
+      "applicationCategory": "UtilityApplication",
+      "operatingSystem": "Any (runs in the browser)",
+      "description": "Free searchable cheat sheet of every Apple Dictation command on macOS: what to say for punctuation, symbols, currency and math, formatting, and emoji, with a printable table.",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "author": { "@type": "Person", "name": "Robby J", "url": "https://automatewithrobby.fyi/" }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "OpenFlow", "item": "https://robj1925.github.io/open-flow/" },
+        { "@type": "ListItem", "position": 2, "name": "Free Tools", "item": "https://robj1925.github.io/open-flow/tools/" },
+        { "@type": "ListItem", "position": 3, "name": "Mac Dictation Commands Cheat Sheet", "item": "https://robj1925.github.io/open-flow/tools/mac-dictation-commands.html" }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How do I turn on dictation on my Mac?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Open System Settings, choose Keyboard, and turn on Dictation. macOS shows the shortcut right there: on most Macs it is pressing the fn key twice, or tapping the microphone key. Press it in any text field and start speaking." }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I say punctuation when dictating?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Speak the command name as part of your sentence. Say thanks exclamation point and your Mac types thanks with an exclamation point. Say quote before and end quote after the words you want quoted. The cheat sheet on this page lists every command macOS understands." }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does Mac dictation stop after a few seconds?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Apple's dictation listens for silence and times out when it thinks you are done, which often cuts you off mid-thought. Keep talking steadily, or press the shortcut again to restart it. Apps like OpenFlow use hold-to-talk instead: recording lasts exactly as long as you hold the key, so there is no timeout guessing." }
+        },
+        {
+          "@type": "Question",
+          "name": "Do I have to say punctuation commands with every dictation app?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No. Modern speech engines punctuate automatically from the rhythm and grammar of your speech. OpenFlow does this by default: say your sentence naturally and the periods, commas, and question marks appear on their own." }
+        }
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<div class="glow" aria-hidden="true"></div>
+
+<header class="nav">
+  <div class="wrap nav-inner">
+    <a class="brand" href="../index.html" aria-label="OpenFlow home">
+      <img class="logo" src="../images/icon.png" alt="" width="30" height="30" onerror="this.style.display='none'">
+      OpenFlow
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="index.html">All free tools</a>
+      <a href="../index.html#features">Features</a>
+      <a href="https://github.com/Robj1925/open-flow">GitHub</a>
+    </nav>
+    <a class="btn btn-primary btn-sm nav-cta" href="https://github.com/Robj1925/open-flow/releases/latest/download/OpenFlow.zip">Download</a>
+  </div>
+</header>
+
+<main>
+  <div class="wrap-narrow">
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a href="../index.html">OpenFlow</a> <span class="sep">/</span>
+      <a href="index.html">Free tools</a> <span class="sep">/</span>
+      <span>Mac dictation commands</span>
+    </nav>
+
+    <section class="tool-hero">
+      <h1>Every Mac dictation command, searchable</h1>
+      <p class="sub">What to say to get punctuation, symbols, and formatting with Apple's built-in dictation. Search it, filter it by category, or print the whole cheat sheet.</p>
+    </section>
+
+    <section class="panel" aria-label="Command cheat sheet">
+      <div class="cmd-controls">
+        <div class="field">
+          <label for="cmdSearch">Search commands</label>
+          <input type="search" id="cmdSearch" placeholder="Try: question, dash, caps, euro" autocomplete="off">
+          <span class="hint">Filters on both the spoken phrase and the result.</span>
+        </div>
+        <button type="button" class="btn btn-ghost btn-sm" id="printBtn">Print this cheat sheet</button>
+      </div>
+
+      <div class="seg" role="group" aria-label="Filter by category" id="catSeg" style="margin-top:1rem">
+        <button type="button" aria-pressed="true" data-cat="All">All</button>
+        <button type="button" aria-pressed="false" data-cat="Punctuation">Punctuation</button>
+        <button type="button" aria-pressed="false" data-cat="Symbols">Symbols</button>
+        <button type="button" aria-pressed="false" data-cat="Currency and math">Currency and math</button>
+        <button type="button" aria-pressed="false" data-cat="Formatting">Formatting</button>
+        <button type="button" aria-pressed="false" data-cat="Emoji">Emoji</button>
+      </div>
+
+      <p id="cmdCount" aria-live="polite"></p>
+
+      <div class="table-scroll" style="margin-top:.6rem">
+        <table class="cmp" aria-describedby="cmdCount">
+          <thead>
+            <tr><th scope="col">Say this</th><th scope="col">You get</th></tr>
+          </thead>
+          <tbody id="cmdBody"></tbody>
+        </table>
+      </div>
+
+      <p class="notice" style="margin-top:1.4rem"><span aria-hidden="true">&#128161;</span><span>These commands work with Apple's built-in dictation. <a href="../index.html" style="color:var(--teal)">OpenFlow</a> takes a different approach: its Parakeet engine punctuates automatically as you speak, so you say your sentence like a human and the period shows up on its own.</span></p>
+    </section>
+
+    <section class="band" aria-label="How to turn on Mac dictation" id="howto">
+      <div class="section-head">
+        <h2>How to turn on Mac dictation</h2>
+      </div>
+      <ol class="steps">
+        <li>Open <b>System Settings</b>, click <b>Keyboard</b>, and turn on <b>Dictation</b>.</li>
+        <li>Press the shortcut shown there. On most Macs that means pressing <b>fn twice</b>, or tapping the <b>microphone key</b>.</li>
+        <li>Click into any text field and <b>start speaking</b>. Use the commands above whenever you need punctuation or symbols.</li>
+      </ol>
+    </section>
+
+    <section class="band" aria-label="FAQ" id="faq" style="padding-top:0">
+      <div class="section-head">
+        <h2>Fair questions</h2>
+      </div>
+      <div class="faq">
+        <details>
+          <summary>How do I turn on dictation on my Mac?</summary>
+          <p>Open System Settings, choose Keyboard, and turn on Dictation. macOS shows the shortcut right there: on most Macs it is pressing the fn key twice, or tapping the microphone key. Press it in any text field and start speaking.</p>
+        </details>
+        <details>
+          <summary>How do I say punctuation when dictating?</summary>
+          <p>Speak the command name as part of your sentence. Say "thanks exclamation point" and your Mac types "thanks!". Say "quote" before and "end quote" after the words you want quoted. The cheat sheet above lists every command macOS understands.</p>
+        </details>
+        <details>
+          <summary>Why does Mac dictation stop after a few seconds?</summary>
+          <p>Apple's dictation listens for silence and times out when it thinks you are done, which often cuts you off mid-thought. Keep talking steadily, or press the shortcut again to restart it. Apps like <a href="../index.html">OpenFlow</a> use hold-to-talk instead: recording lasts exactly as long as you hold the key, so there is no timeout guessing.</p>
+        </details>
+        <details>
+          <summary>Do I have to say punctuation commands with every dictation app?</summary>
+          <p>No. Modern speech engines punctuate automatically from the rhythm and grammar of your speech. <a href="../index.html">OpenFlow</a> does this by default: say your sentence naturally and the periods, commas, and question marks appear on their own.</p>
+        </details>
+      </div>
+    </section>
+
+    <section class="of-cta" aria-label="Download OpenFlow">
+      <h2>Say the sentence. Skip the commands.</h2>
+      <p>OpenFlow punctuates for you: hold a key, speak naturally, release, and finished text lands at your cursor. Free forever, open source, and transcribed 100% on your Mac.</p>
+      <div class="btns">
+        <a class="btn btn-primary" href="https://github.com/Robj1925/open-flow/releases/latest/download/OpenFlow.zip">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3v10.6l3.3-3.3 1.4 1.4L12 17.4 6.3 11.7l1.4-1.4L11 13.6V3h1zM5 19h14v2H5z"/></svg>
+          Download OpenFlow free
+        </a>
+        <a class="btn btn-ghost" href="../index.html">See how it works</a>
+      </div>
+      <p class="fine">Apple Silicon, macOS 14 or later. About two minutes from download to first dictation.</p>
+    </section>
+
+    <section class="band" aria-label="More tools" id="more-tools" style="padding-bottom:0">
+      <div class="section-head"><h2>More free tools</h2></div>
+      <div class="tools-grid">
+        <a class="tool-card" href="dictation-app-picker.html"><span class="kicker">Picker</span><h3>Which dictation app should I use?</h3><p>Five honest questions, one recommendation. Compare every major option.</p><span class="go">Open the tool &rarr;</span></a>
+        <a class="tool-card" href="keyboard-tester.html"><span class="kicker">Utility</span><h3>Keyboard tester</h3><p>Press every key and see it light up, including what your fn key actually does.</p><span class="go">Open the tool &rarr;</span></a>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap foot-inner">
+    <a class="brand" href="../index.html">
+      <img class="logo" src="../images/icon.png" alt="" width="26" height="26" style="width:26px;height:26px" onerror="this.style.display='none'">
+      OpenFlow
+    </a>
+    <span>MIT licensed. Built with Swift.</span>
+    <div class="foot-links">
+      <a href="index.html">Free tools</a>
+      <a href="https://github.com/Robj1925/open-flow">GitHub</a>
+      <a href="https://github.com/Robj1925/open-flow/releases">Releases</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var P = 'Punctuation', S = 'Symbols', C = 'Currency and math', F = 'Formatting', E = 'Emoji';
+  var CATS = [P, S, C, F, E];
+
+  // desc:true means "get" is a description, not the literal output characters.
+  var COMMANDS = [
+    // Punctuation
+    { say:'period', get:'.', cat:P },
+    { say:'comma', get:',', cat:P },
+    { say:'question mark', get:'?', cat:P },
+    { say:'exclamation point', get:'!', cat:P },
+    { say:'apostrophe', get:'’', cat:P },
+    { say:'colon', get:':', cat:P },
+    { say:'semicolon', get:';', cat:P },
+    { say:'quote', get:'“', cat:P, note:'opens a double quotation' },
+    { say:'end quote', get:'”', cat:P, note:'closes it' },
+    { say:'single quote', get:'‘', cat:P, note:'opens a single quotation' },
+    { say:'end single quote', get:'’', cat:P, note:'closes it' },
+    { say:'hyphen', get:'-', cat:P },
+    { say:'dash', get:'–', cat:P },
+    { say:'em dash', get:'—', cat:P },
+    { say:'ellipsis (or dot dot dot)', get:'…', cat:P },
+    { say:'open parenthesis', get:'(', cat:P },
+    { say:'close parenthesis', get:')', cat:P },
+    { say:'open bracket', get:'[', cat:P },
+    { say:'close bracket', get:']', cat:P },
+    { say:'open brace', get:'{', cat:P },
+    { say:'close brace', get:'}', cat:P },
+    { say:'new line', get:'starts a new line, like pressing Return once', cat:P, desc:true },
+    { say:'new paragraph', get:'starts a new paragraph, like pressing Return twice', cat:P, desc:true },
+
+    // Symbols
+    { say:'ampersand', get:'&', cat:S },
+    { say:'asterisk', get:'*', cat:S },
+    { say:'at sign', get:'@', cat:S },
+    { say:'backslash', get:'\\', cat:S },
+    { say:'forward slash', get:'/', cat:S },
+    { say:'caret', get:'^', cat:S },
+    { say:'tilde', get:'~', cat:S },
+    { say:'underscore', get:'_', cat:S },
+    { say:'percent sign', get:'%', cat:S },
+    { say:'hashtag (or pound sign)', get:'#', cat:S },
+    { say:'vertical bar', get:'|', cat:S },
+    { say:'degree sign', get:'°', cat:S },
+    { say:'copyright sign', get:'©', cat:S },
+    { say:'registered sign', get:'®', cat:S },
+    { say:'trademark sign', get:'™', cat:S },
+    { say:'section sign', get:'§', cat:S },
+
+    // Currency and math
+    { say:'dollar sign', get:'$', cat:C },
+    { say:'cent sign', get:'¢', cat:C },
+    { say:'euro sign', get:'€', cat:C },
+    { say:'pound sterling sign', get:'£', cat:C },
+    { say:'yen sign', get:'¥', cat:C },
+    { say:'plus sign', get:'+', cat:C },
+    { say:'minus sign', get:'-', cat:C },
+    { say:'equals sign', get:'=', cat:C },
+    { say:'greater than sign', get:'>', cat:C },
+    { say:'less than sign', get:'<', cat:C },
+
+    // Formatting
+    { say:'caps on', get:'Capitalizes The First Letter Of Every Word until you turn it off', cat:F, desc:true },
+    { say:'caps off', get:'stops the caps on mode', cat:F, desc:true },
+    { say:'all caps', get:'makes the NEXT word uppercase', cat:F, desc:true },
+    { say:'all caps on', get:'MAKES EVERYTHING UPPERCASE until you turn it off', cat:F, desc:true },
+    { say:'all caps off', get:'stops the all caps on mode', cat:F, desc:true },
+    { say:'no caps', get:'makes the next word lowercase, even names', cat:F, desc:true },
+    { say:'no caps on', get:'makes everything lowercase until you turn it off', cat:F, desc:true },
+    { say:'no caps off', get:'stops the no caps on mode', cat:F, desc:true },
+    { say:'no space', get:'joins the next word to the previous one', cat:F, desc:true },
+    { say:'no space on', get:'removesallspacesbetweenwords until you turn it off', cat:F, desc:true },
+    { say:'no space off', get:'stops the no space on mode', cat:F, desc:true },
+    { say:'numeral', get:'formats the next number as a digit (5 instead of five)', cat:F, desc:true },
+    { say:'roman numeral', get:'formats the next number as a Roman numeral (IV instead of four)', cat:F, desc:true },
+
+    // Emoji
+    { say:'smiley face', get:':-)', cat:E },
+    { say:'frowny face', get:':-(', cat:E },
+    { say:'winky face', get:';-)', cat:E },
+    { say:'heart emoticon', get:'<3', cat:E }
+  ];
+
+  var searchEl = document.getElementById('cmdSearch');
+  var segEl = document.getElementById('catSeg');
+  var bodyEl = document.getElementById('cmdBody');
+  var countEl = document.getElementById('cmdCount');
+  var printBtn = document.getElementById('printBtn');
+  var activeCat = 'All';
+
+  function esc(s){
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function getCell(c){
+    if (c.desc) return '<td class="get">' + esc(c.get) + '</td>';
+    var note = c.note ? '<span class="expl">' + esc(c.note) + '</span>' : '';
+    return '<td class="get"><span class="chr">' + esc(c.get) + '</span>' + note + '</td>';
+  }
+
+  function filtered(){
+    var q = searchEl.value.trim().toLowerCase();
+    return COMMANDS.filter(function(c){
+      if (activeCat !== 'All' && c.cat !== activeCat) return false;
+      if (!q) return true;
+      var hay = (c.say + ' ' + c.get + ' ' + (c.note || '')).toLowerCase();
+      return hay.indexOf(q) !== -1;
+    });
+  }
+
+  function renderRows(list){
+    if (!list.length){
+      var q = searchEl.value.trim();
+      bodyEl.innerHTML = '<tr><td colspan="2">No matches for "' + esc(q) + '". Try a shorter word, or clear the search.</td></tr>';
+      return;
+    }
+    var html = '';
+    CATS.forEach(function(cat){
+      var rows = list.filter(function(c){ return c.cat === cat; });
+      if (!rows.length) return;
+      html += '<tr class="cat-row"><th colspan="2" scope="colgroup">' + esc(cat) + '</th></tr>';
+      rows.forEach(function(c){
+        html += '<tr><td class="say">' + esc(c.say) + '</td>' + getCell(c) + '</tr>';
+      });
+    });
+    bodyEl.innerHTML = html;
+  }
+
+  function render(){
+    var list = filtered();
+    renderRows(list);
+    countEl.textContent = list.length === COMMANDS.length
+      ? 'Showing all ' + COMMANDS.length + ' commands.'
+      : 'Showing ' + list.length + ' of ' + COMMANDS.length + ' commands.';
+  }
+
+  searchEl.addEventListener('input', render);
+
+  segEl.addEventListener('click', function(ev){
+    var btn = ev.target.closest('button[data-cat]');
+    if (!btn) return;
+    activeCat = btn.getAttribute('data-cat');
+    Array.prototype.forEach.call(segEl.querySelectorAll('button[data-cat]'), function(b){
+      b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
+    });
+    render();
+  });
+
+  printBtn.addEventListener('click', function(){ window.print(); });
+
+  // Print the full cheat sheet regardless of the current filter, then restore it.
+  window.addEventListener('beforeprint', function(){ renderRows(COMMANDS); });
+  window.addEventListener('afterprint', function(){ render(); });
+
+  render();
+})();
+</script>
+</body>
+</html>

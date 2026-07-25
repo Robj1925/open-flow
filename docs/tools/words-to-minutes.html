@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-site-verification" content="r5WcXM0pyY4K82C2E__WblAHcsyXCcNfjlECxPGKRw8" />
+<title>Words to Minutes Calculator: How Long to Speak Any Word Count</title>
+<meta name="description" content="Free words to minutes calculator. Convert any word count into speaking time, or find how many words fit a 5 minute speech, at slow, conversational, or fast pace.">
+<link rel="canonical" href="https://robj1925.github.io/open-flow/tools/words-to-minutes.html">
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://robj1925.github.io/open-flow/tools/words-to-minutes.html">
+<meta property="og:title" content="Words to Minutes Calculator">
+<meta property="og:description" content="How long does it take to speak any word count out loud? Convert words to speaking time and back, at any pace.">
+<meta property="og:image" content="https://robj1925.github.io/open-flow/images/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" type="image/png" sizes="32x32" href="../images/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="../images/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="../images/apple-touch-icon.png">
+
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@600,500&f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tools.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "Words to Minutes Calculator",
+      "url": "https://robj1925.github.io/open-flow/tools/words-to-minutes.html",
+      "applicationCategory": "UtilityApplication",
+      "operatingSystem": "Any (runs in the browser)",
+      "description": "Free calculator that converts any word count into speaking time, and any time slot into a word count, at slow, conversational, fast, or custom speaking paces.",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "author": { "@type": "Person", "name": "Robby J", "url": "https://automatewithrobby.fyi/" }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "OpenFlow", "item": "https://robj1925.github.io/open-flow/" },
+        { "@type": "ListItem", "position": 2, "name": "Free Tools", "item": "https://robj1925.github.io/open-flow/tools/" },
+        { "@type": "ListItem", "position": 3, "name": "Words to Minutes Calculator", "item": "https://robj1925.github.io/open-flow/tools/words-to-minutes.html" }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How many words per minute is normal speech?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Conversational English runs about 140 to 160 words per minute. Presentations and prepared talks land closer to 110 to 130 wpm, because pauses, emphasis, and nerves all slow you down. Audiobook narrators aim for roughly 150 to 155 wpm." }
+        },
+        {
+          "@type": "Question",
+          "name": "How many words is a 5 minute speech?",
+          "acceptedAnswer": { "@type": "Answer", "text": "About 700 words at a comfortable conversational pace of 140 wpm. A slow, deliberate delivery is closer to 550 words, and a fast talker can fit around 850. When in doubt, write 700 and rehearse with a timer." }
+        },
+        {
+          "@type": "Question",
+          "name": "Is speaking faster than typing?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes, by a wide margin. Most people speak around 140 wpm but type around 40 wpm, so speech is roughly 3x faster at getting words out of your head. That gap is exactly why dictation feels like a superpower once it clicks." }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I write documents at speaking speed?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes, with dictation software. OpenFlow is a free, open source dictation app for macOS that transcribes 100% on device at your natural speaking pace: hold a key, talk, release, and the words appear at your cursor. No subscription, no cloud, no word limits." }
+        }
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<div class="glow" aria-hidden="true"></div>
+
+<header class="nav">
+  <div class="wrap nav-inner">
+    <a class="brand" href="../index.html" aria-label="OpenFlow home">
+      <img class="logo" src="../images/icon.png" alt="" width="30" height="30" onerror="this.style.display='none'">
+      OpenFlow
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="index.html">All free tools</a>
+      <a href="../index.html#features">Features</a>
+      <a href="https://github.com/Robj1925/open-flow">GitHub</a>
+    </nav>
+    <a class="btn btn-primary btn-sm nav-cta" href="https://github.com/Robj1925/open-flow/releases/latest/download/OpenFlow.zip">Download</a>
+  </div>
+</header>
+
+<main>
+  <div class="wrap-narrow">
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a href="../index.html">OpenFlow</a> <span class="sep">/</span>
+      <a href="index.html">Free tools</a> <span class="sep">/</span>
+      <span>Words to minutes</span>
+    </nav>
+
+    <section class="tool-hero">
+      <h1>Words to minutes calculator</h1>
+      <p class="sub">Type a word count or paste a script to see how long it takes to say out loud. Or flip it around and find how many words fill your time slot.</p>
+    </section>
+
+    <section class="panel" aria-label="Calculator">
+      <div class="seg" id="modeSeg" role="group" aria-label="Conversion direction">
+        <button type="button" data-mode="words" aria-pressed="true">Words to minutes</button>
+        <button type="button" data-mode="minutes" aria-pressed="false">Minutes to words</button>
+      </div>
+
+      <div id="wordsMode" style="margin-top:1.4rem">
+        <div class="grid-2">
+          <div class="field">
+            <label for="wordCount">Word count</label>
+            <input type="number" id="wordCount" min="0" step="10" value="500" inputmode="numeric">
+            <span class="hint">Type a number, or paste your script instead. Whichever you touched last wins.</span>
+          </div>
+          <div class="field">
+            <label for="scriptText">Or paste your script, we count it for you</label>
+            <textarea id="scriptText" placeholder="Paste your speech, script, or essay here" aria-describedby="scriptCount"></textarea>
+            <span class="hint" id="scriptCount">0 words counted</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="minutesMode" style="display:none; margin-top:1.4rem">
+        <div class="field">
+          <label for="minuteCount">Minutes available</label>
+          <input type="number" id="minuteCount" min="0" step="0.5" value="5" inputmode="decimal">
+          <span class="hint">Half minutes are fine: 7.5 works.</span>
+        </div>
+      </div>
+
+      <div class="field" style="margin-top:1.4rem">
+        <label id="paceLabel">Speaking pace <span class="mono" style="color:var(--teal)" id="wpmLabel">140 wpm</span></label>
+        <div class="seg" id="paceSeg" role="group" aria-labelledby="paceLabel">
+          <button type="button" data-wpm="110" aria-pressed="false">Slow (110 wpm)</button>
+          <button type="button" data-wpm="140" aria-pressed="true">Conversational (140 wpm)</button>
+          <button type="button" data-wpm="170" aria-pressed="false">Fast (170 wpm)</button>
+        </div>
+        <label class="hint" for="wpmSlider" style="margin-top:.5rem">Or slide to a custom pace (80 to 220 wpm)</label>
+        <input type="range" id="wpmSlider" min="80" max="220" step="5" value="140" aria-label="Custom speaking pace in words per minute">
+      </div>
+
+      <div style="text-align:center; margin-top:2rem" aria-live="polite">
+        <div class="big-num" id="bigNum">3:34</div>
+        <div class="big-label" id="bigLabel">to speak 500 words at 140 wpm</div>
+      </div>
+
+      <div class="stat-row" style="margin-top:1.6rem">
+        <div class="stat"><div class="n" id="s110">4:33</div><div class="l" id="l110">at 110 wpm (slow)</div></div>
+        <div class="stat accent"><div class="n" id="s140">3:34</div><div class="l" id="l140">at 140 wpm (conversational)</div></div>
+        <div class="stat"><div class="n" id="s170">2:56</div><div class="l" id="l170">at 170 wpm (fast)</div></div>
+      </div>
+    </section>
+
+    <section class="band" aria-label="Common speech lengths">
+      <div class="section-head">
+        <h2>How many words for common speech lengths?</h2>
+        <p>Quick reference at a slow, conversational, and fast pace. Rehearsal with a timer always beats math, but this gets your draft in the right zone.</p>
+      </div>
+      <div class="table-scroll">
+        <table class="cmp">
+          <thead>
+            <tr><th>Length</th><th>Slow (110 wpm)</th><th>Conversational (140 wpm)</th><th>Fast (170 wpm)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>30 second pitch</td><td>55 words</td><td>70 words</td><td>85 words</td></tr>
+            <tr><td>1 minute</td><td>110 words</td><td>140 words</td><td>170 words</td></tr>
+            <tr><td>2 minute toast</td><td>220 words</td><td>280 words</td><td>340 words</td></tr>
+            <tr><td>5 minute talk</td><td>550 words</td><td>700 words</td><td>850 words</td></tr>
+            <tr><td>10 minute talk</td><td>1,100 words</td><td>1,400 words</td><td>1,700 words</td></tr>
+            <tr><td>20 minute keynote</td><td>2,200 words</td><td>2,800 words</td><td>3,400 words</td></tr>
+            <tr><td>60 minute lecture</td><td>6,600 words</td><td>8,400 words</td><td>10,200 words</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="band" aria-label="FAQ" style="padding-top:0">
+      <div class="section-head">
+        <h2>Fair questions</h2>
+      </div>
+      <div class="faq">
+        <details>
+          <summary>How many words per minute is normal speech?</summary>
+          <p>Conversational English runs about 140 to 160 words per minute. Presentations and prepared talks land closer to 110 to 130 wpm, because pauses, emphasis, and nerves all slow you down. Audiobook narrators aim for roughly 150 to 155 wpm.</p>
+        </details>
+        <details>
+          <summary>How many words is a 5 minute speech?</summary>
+          <p>About 700 words at a comfortable conversational pace of 140 wpm. A slow, deliberate delivery is closer to 550 words, and a fast talker can fit around 850. When in doubt, write 700 and rehearse with a timer.</p>
+        </details>
+        <details>
+          <summary>Is speaking faster than typing?</summary>
+          <p>Yes, by a wide margin. Most people speak around 140 wpm but type around 40 wpm, so speech is roughly 3x faster at getting words out of your head. That gap is exactly why dictation feels like a superpower once it clicks.</p>
+        </details>
+        <details>
+          <summary>Can I write documents at speaking speed?</summary>
+          <p>Yes, with dictation software. <a href="../index.html">OpenFlow</a> is a free, open source dictation app for macOS that transcribes 100% on device at your natural speaking pace: hold a key, talk, release, and the words appear at your cursor. No subscription, no cloud, no word limits.</p>
+        </details>
+      </div>
+    </section>
+
+    <section class="of-cta" aria-label="Download OpenFlow">
+      <h2>Stop typing at 40 wpm. Start speaking at 140.</h2>
+      <p>OpenFlow gives you hold-a-key dictation anywhere on your Mac, transcribed 100% on device. Write at the speed this calculator just showed you, free forever, and your voice never leaves your machine.</p>
+      <div class="btns">
+        <a class="btn btn-primary" href="https://github.com/Robj1925/open-flow/releases/latest/download/OpenFlow.zip">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3v10.6l3.3-3.3 1.4 1.4L12 17.4 6.3 11.7l1.4-1.4L11 13.6V3h1zM5 19h14v2H5z"/></svg>
+          Download OpenFlow free
+        </a>
+        <a class="btn btn-ghost" href="../index.html">See how it works</a>
+      </div>
+      <p class="fine">Apple Silicon, macOS 14 or later. About two minutes from download to first dictation.</p>
+    </section>
+
+    <section class="band" aria-label="More tools" style="padding-bottom:0">
+      <div class="section-head"><h2>More free tools</h2></div>
+      <div class="tools-grid">
+        <a class="tool-card" href="speaking-speed-test.html"><span class="kicker">Mic test</span><h3>Speaking speed test</h3><p>Measure your real words per minute live, right in the browser.</p><span class="go">Open the tool &rarr;</span></a>
+        <a class="tool-card" href="filler-word-counter.html"><span class="kicker">Analyzer</span><h3>Filler word counter</h3><p>Paste a transcript, count the ums.</p><span class="go">Open the tool &rarr;</span></a>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap foot-inner">
+    <a class="brand" href="../index.html">
+      <img class="logo" src="../images/icon.png" alt="" width="26" height="26" style="width:26px;height:26px" onerror="this.style.display='none'">
+      OpenFlow
+    </a>
+    <span>MIT licensed. Built with Swift.</span>
+    <div class="foot-links">
+      <a href="index.html">Free tools</a>
+      <a href="https://github.com/Robj1925/open-flow">GitHub</a>
+      <a href="https://github.com/Robj1925/open-flow/releases">Releases</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  const modeBtns = Array.from(document.querySelectorAll('#modeSeg button'));
+  const wordsMode = document.getElementById('wordsMode');
+  const minutesMode = document.getElementById('minutesMode');
+  const wordCountEl = document.getElementById('wordCount');
+  const scriptEl = document.getElementById('scriptText');
+  const scriptCount = document.getElementById('scriptCount');
+  const minuteEl = document.getElementById('minuteCount');
+  const paceBtns = Array.from(document.querySelectorAll('#paceSeg button'));
+  const slider = document.getElementById('wpmSlider');
+  const wpmLabel = document.getElementById('wpmLabel');
+  const bigNum = document.getElementById('bigNum');
+  const bigLabel = document.getElementById('bigLabel');
+  const statN = { 110: document.getElementById('s110'), 140: document.getElementById('s140'), 170: document.getElementById('s170') };
+  const statL = { 110: document.getElementById('l110'), 140: document.getElementById('l140'), 170: document.getElementById('l170') };
+
+  const PACES = [110, 140, 170];
+  const PACE_NAMES = { 110: 'slow', 140: 'conversational', 170: 'fast' };
+
+  let mode = 'words';       // 'words' | 'minutes'
+  let lastSource = 'number';// 'number' | 'script' (whichever was touched last wins)
+  let wpm = 140;
+
+  function countWords(text){
+    const m = text.match(/\S+/g);
+    return m ? m.length : 0;
+  }
+  function currentWords(){
+    if (lastSource === 'script') return countWords(scriptEl.value);
+    const n = parseFloat(wordCountEl.value);
+    return isFinite(n) && n > 0 ? Math.round(n) : 0;
+  }
+  function currentMinutes(){
+    const n = parseFloat(minuteEl.value);
+    return isFinite(n) && n > 0 ? n : 0;
+  }
+  function fmtInt(n){ return Math.round(n).toLocaleString('en-US'); }
+  function fmtTime(mins){
+    let s = Math.round(mins * 60);
+    const h = Math.floor(s / 3600); s -= h * 3600;
+    const m = Math.floor(s / 60); const sec = s - m * 60;
+    const two = x => String(x).padStart(2, '0');
+    return h ? h + ':' + two(m) + ':' + two(sec) : m + ':' + two(sec);
+  }
+  function minutePhrase(n){
+    return n === 1 ? '1 minute' : n.toLocaleString('en-US') + ' minutes';
+  }
+
+  function render(){
+    wpmLabel.textContent = wpm + ' wpm';
+    scriptCount.textContent = fmtInt(countWords(scriptEl.value)) + ' words counted';
+
+    if (mode === 'words'){
+      const w = currentWords();
+      bigNum.textContent = fmtTime(w / wpm);
+      bigLabel.textContent = 'to speak ' + fmtInt(w) + ' words at ' + wpm + ' wpm';
+      PACES.forEach(p => {
+        statN[p].textContent = fmtTime(w / p);
+        statL[p].textContent = 'at ' + p + ' wpm (' + PACE_NAMES[p] + ')';
+      });
+    } else {
+      const m = currentMinutes();
+      bigNum.textContent = fmtInt(m * wpm);
+      bigLabel.textContent = 'words for ' + minutePhrase(m) + ' at ' + wpm + ' wpm';
+      PACES.forEach(p => {
+        statN[p].textContent = fmtInt(m * p);
+        statL[p].textContent = 'words at ' + p + ' wpm (' + PACE_NAMES[p] + ')';
+      });
+    }
+  }
+
+  modeBtns.forEach(btn => btn.addEventListener('click', () => {
+    mode = btn.dataset.mode;
+    modeBtns.forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
+    wordsMode.style.display = mode === 'words' ? '' : 'none';
+    minutesMode.style.display = mode === 'minutes' ? '' : 'none';
+    render();
+  }));
+
+  paceBtns.forEach(btn => btn.addEventListener('click', () => {
+    wpm = parseInt(btn.dataset.wpm, 10);
+    slider.value = wpm;
+    paceBtns.forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
+    render();
+  }));
+
+  slider.addEventListener('input', () => {
+    wpm = parseInt(slider.value, 10);
+    paceBtns.forEach(b => b.setAttribute('aria-pressed', 'false'));
+    render();
+  });
+
+  wordCountEl.addEventListener('input', () => { lastSource = 'number'; render(); });
+  scriptEl.addEventListener('input', () => { lastSource = 'script'; render(); });
+  minuteEl.addEventListener('input', render);
+
+  render();
+})();
+</script>
+</body>
+</html>

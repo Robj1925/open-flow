@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-site-verification" content="r5WcXM0pyY4K82C2E__WblAHcsyXCcNfjlECxPGKRw8" />
+<title>Speaking Speed Test: How Many Words Per Minute Do You Speak?</title>
+<meta name="description" content="Free speaking speed test. Talk for 30 seconds and get your real words per minute, with a live word count while you speak. Then see how your voice compares with typing speed.">
+<link rel="canonical" href="https://robj1925.github.io/open-flow/tools/speaking-speed-test.html">
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://robj1925.github.io/open-flow/tools/speaking-speed-test.html">
+<meta property="og:title" content="Speaking Speed Test">
+<meta property="og:description" content="How many words per minute do you speak? Take a free 30 second test and find out, then see how your voice compares with typing.">
+<meta property="og:image" content="https://robj1925.github.io/open-flow/images/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" type="image/png" sizes="32x32" href="../images/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="../images/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="../images/apple-touch-icon.png">
+
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@600,500&f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tools.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "Speaking Speed Test",
+      "url": "https://robj1925.github.io/open-flow/tools/speaking-speed-test.html",
+      "applicationCategory": "UtilityApplication",
+      "operatingSystem": "Any (runs in the browser)",
+      "description": "Free browser tool that measures your speaking speed in words per minute with a 30 second talking test, including a timed reading passage fallback for browsers without speech recognition.",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "author": { "@type": "Person", "name": "Robby J", "url": "https://automatewithrobby.fyi/" }
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "OpenFlow", "item": "https://robj1925.github.io/open-flow/" },
+        { "@type": "ListItem", "position": 2, "name": "Free Tools", "item": "https://robj1925.github.io/open-flow/tools/" },
+        { "@type": "ListItem", "position": 3, "name": "Speaking Speed Test", "item": "https://robj1925.github.io/open-flow/tools/speaking-speed-test.html" }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is the average speaking speed?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Most people speak conversational English at about 140 to 160 words per minute. Presenters slow down, sports commentators speed up, and audiobook narrators hold a steady 150 to 160 wpm so listeners never have to rewind." }
+        },
+        {
+          "@type": "Question",
+          "name": "What speed should I present at?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Aim for about 110 to 130 words per minute with deliberate pauses. It feels slow when you are the one speaking, but it gives an audience time to absorb each point, and the pauses read as confidence rather than hesitation." }
+        },
+        {
+          "@type": "Question",
+          "name": "Is speaking really faster than typing?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes, by a wide margin. The average typing speed is about 40 words per minute, so most people speak 3 to 4 times faster than they type. That gap is exactly why dictation works: you get thoughts out at talking speed instead of typing speed." }
+        },
+        {
+          "@type": "Question",
+          "name": "How can I change my pace?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Practice with a timer, pause at punctuation instead of rushing through it, and record yourself. Hearing your own recording is the fastest way to notice pacing habits, and rerunning this test gives you a number to track over time." }
+        }
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<div class="glow" aria-hidden="true"></div>
+
+<header class="nav">
+  <div class="wrap nav-inner">
+    <a class="brand" href="../index.html" aria-label="OpenFlow home">
+      <img class="logo" src="../images/icon.png" alt="" width="30" height="30" onerror="this.style.display='none'">
+      OpenFlow
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="index.html">All free tools</a>
+      <a href="../index.html#features">Features</a>
+      <a href="https://github.com/Robj1925/open-flow">GitHub</a>
+    </nav>
+    <a class="btn btn-primary btn-sm nav-cta" href="https://github.com/Robj1925/open-flow/releases/latest/download/OpenFlow.zip">Download</a>
+  </div>
+</header>
+
+<main>
+  <div class="wrap-narrow">
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <a href="../index.html">OpenFlow</a> <span class="sep">/</span>
+      <a href="index.html">Free tools</a> <span class="sep">/</span>
+      <span>Speaking speed test</span>
+    </nav>
+
+    <section class="tool-hero">
+      <h1>Speaking speed test</h1>
+      <p class="sub">Talk for 30 seconds, get your real words per minute. Live word count while you speak, then a verdict on your pace.</p>
+    </section>
+
+    <section class="panel" aria-label="Speaking speed test">
+
+      <div id="speechMode">
+        <div style="display:flex; gap:1rem; align-items:center; justify-content:space-between; flex-wrap:wrap; background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:1rem 1.2rem">
+          <div style="flex:1 1 260px">
+            <div style="font-size:var(--step--2); text-transform:uppercase; letter-spacing:.08em; color:var(--azure); font-weight:600">Need a topic?</div>
+            <p id="promptText" style="color:var(--muted); font-size:var(--step--1); margin-top:.2rem">Describe your morning so far, from the moment you woke up.</p>
+          </div>
+          <button class="btn btn-ghost btn-sm" id="promptBtn" type="button">New topic</button>
+        </div>
+
+        <div style="text-align:center; margin-top:2rem">
+          <button class="rec-btn" id="recBtn" type="button" aria-label="Start the 30 second speaking test" style="margin-inline:auto">
+            <svg id="micIcon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 15a4 4 0 0 0 4-4V6a4 4 0 1 0-8 0v5a4 4 0 0 0 4 4zm6-4a6 6 0 0 1-12 0H4a8 8 0 0 0 7 7.94V21h2v-2.06A8 8 0 0 0 20 11h-2z"/></svg>
+            <svg id="stopIcon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="display:none"><rect x="7" y="7" width="10" height="10" rx="2"/></svg>
+          </button>
+          <p class="big-label" id="recStatus" aria-live="polite" style="margin-top:.9rem">Click the mic to start a 30 second test. Speak in English at your natural pace.</p>
+        </div>
+
+        <div style="text-align:center; margin-top:1.6rem">
+          <div id="countdown" role="timer" aria-live="polite" aria-atomic="true" style="font-family:'Clash Display','General Sans',sans-serif; font-size:var(--step-3); font-weight:600; letter-spacing:-0.02em; line-height:1">0:30</div>
+          <div style="display:flex; gap:.6rem; justify-content:center; flex-wrap:wrap; margin-top:1rem">
+            <span class="chip">Words <b id="liveWords">0</b></span>
+            <span class="chip">Live WPM <b id="liveWpm">...</b></span>
+          </div>
+        </div>
+      </div>
+
+      <div id="fallbackMode" hidden>
+        <p class="notice"><span aria-hidden="true">&#128214;</span><span><b>Reading mode:</b> your browser does not support live speech recognition (Firefox, for example), so this test uses a timed reading instead. Read the passage below out loud at your natural pace, and your words per minute is calculated from the passage length and your time.</span></p>
+
+        <div style="background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:1.2rem 1.4rem; margin-top:1.2rem">
+          <p id="passage" style="color:var(--muted); line-height:1.7">The early morning sun climbed slowly over the ridge and spilled light across the green valley floor. A narrow river wound between the fields, catching the glow and carrying it toward the sea. In the small town beside the water, shopkeepers rolled up their shutters and set out crates of fruit, fresh bread, and bundles of flowers. A baker waved to the postman, who was already halfway through his route. Children hurried along the sidewalk with backpacks bouncing, calling out to friends across the street. By eight the square was busy with bicycles, delivery vans, and the smell of coffee drifting from open doors. It was an ordinary morning, and that was exactly what made it good: everything in its place, everyone in motion, and the whole day still ahead.</p>
+          <p id="passageCount" style="font-size:var(--step--2); color:var(--faint); margin-top:.8rem"></p>
+        </div>
+
+        <div style="display:flex; gap:.85rem; align-items:center; flex-wrap:wrap; margin-top:1.4rem">
+          <button class="btn btn-primary" id="readStart" type="button">Start reading</button>
+          <button class="btn btn-ghost" id="readStop" type="button" disabled>I finished</button>
+          <span class="mono" id="readClock" role="timer" aria-live="polite" aria-atomic="true" style="font-size:var(--step-1); font-weight:600">0:00</span>
+        </div>
+        <p class="big-label" id="readStatus" aria-live="polite" style="margin-top:.8rem">Click Start reading, read the whole passage out loud, then click I finished.</p>
+      </div>
+
+      <div id="resultBlock" hidden aria-live="polite" style="margin-top:2rem; border-top:1px solid var(--border); padding-top:1.8rem">
+        <div style="text-align:center">
+          <div class="big-num" id="wpmNum">0</div>
+          <div class="big-label">words per minute</div>
+        </div>
+        <div class="stat-row" style="margin-top:1.6rem">
+          <div class="stat"><div class="n" id="statWords">0</div><div class="l">total words</div></div>
+          <div class="stat"><div class="n" id="statDuration">0s</div><div class="l">duration</div></div>
+          <div class="stat accent"><div class="n" id="statMult">0x</div><div class="l">vs 40 wpm average typing</div></div>
+        </div>
+        <p class="notice" style="margin-top:1.4rem" id="interpNotice"><span aria-hidden="true">&#128483;&#65039;</span><span id="interpText"></span></p>
+      </div>
+
+      <p class="notice warn" style="margin-top:1.4rem"><span aria-hidden="true">&#9888;&#65039;</span><span><b>Accuracy note:</b> browser speech recognition can miss or miscount a few words, so treat the result as a solid estimate rather than a lab measurement. Depending on your browser, the audio may be sent to Google or Apple servers for processing. On-device dictation like <a href="../index.html" style="color:var(--teal)">OpenFlow</a> keeps audio on your Mac.</span></p>
+    </section>
+
+    <section class="band" aria-label="Speaking speed benchmarks">
+      <div class="section-head">
+        <h2>What your number means</h2>
+        <p>Speaking speed is situational. The same voice that races through a story should slow way down on stage.</p>
+      </div>
+      <div class="table-scroll">
+        <table class="cmp">
+          <thead>
+            <tr><th>Pace</th><th>How it sounds</th><th>Where it fits</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Under 110 wpm</td><td>Measured, deliberate</td><td class="good">Presentations, teaching, important announcements</td></tr>
+            <tr class="hl"><td>110 to 150 wpm</td><td>Relaxed, conversational</td><td class="good">Everyday conversation, meetings, podcasts</td></tr>
+            <tr><td>150 to 190 wpm</td><td>Energetic, quick</td><td class="warn">Excited storytelling, casual chats with friends</td></tr>
+            <tr><td>Over 190 wpm</td><td>Rapid fire</td><td class="bad">Auctioneers, ad disclaimers, very patient listeners</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="band" aria-label="FAQ" style="padding-top:0">
+      <div class="section-head">
+        <h2>Fair questions</h2>
+      </div>
+      <div class="faq">
+        <details>
+          <summary>What is the average speaking speed?</summary>
+          <p>Most people speak conversational English at about 140 to 160 words per minute. Presenters slow down, sports commentators speed up, and audiobook narrators hold a steady 150 to 160 wpm so listeners never have to rewind.</p>
+        </details>
+        <details>
+          <summary>What speed should I present at?</summary>
+          <p>Aim for about 110 to 130 words per minute with deliberate pauses. It feels slow when you are the one speaking, but it gives an audience time to absorb each point, and the pauses read as confidence rather than hesitation.</p>
+        </details>
+        <details>
+          <summary>Is speaking really faster than typing?</summary>
+          <p>Yes, by a wide margin. The average typing speed is about 40 words per minute, so most people speak 3 to 4 times faster than they type. That gap is exactly why <a href="../index.html">dictation</a> works: you get thoughts out at talking speed instead of typing speed.</p>
+        </details>
+        <details>
+          <summary>How can I change my pace?</summary>
+          <p>Practice with a timer, pause at punctuation instead of rushing through it, and record yourself. Hearing your own recording is the fastest way to notice pacing habits, and rerunning this test gives you a number to track over time.</p>
+        </details>
+      </div>
+    </section>
+
+    <section class="of-cta" aria-label="Download OpenFlow">
+      <h2>Your voice is faster than your keyboard.</h2>
+      <p>OpenFlow turns that speed into text: hold a key, speak, release, and your words appear at your cursor, transcribed 100% on device. Free forever, open source, and your voice never leaves your Mac.</p>
+      <div class="btns">
+        <a class="btn btn-primary" href="https://github.com/Robj1925/open-flow/releases/latest/download/OpenFlow.zip">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3v10.6l3.3-3.3 1.4 1.4L12 17.4 6.3 11.7l1.4-1.4L11 13.6V3h1zM5 19h14v2H5z"/></svg>
+          Download OpenFlow free
+        </a>
+        <a class="btn btn-ghost" href="../index.html">See how it works</a>
+      </div>
+      <p class="fine">Apple Silicon, macOS 14 or later. About two minutes from download to first dictation.</p>
+    </section>
+
+    <section class="band" aria-label="More tools" style="padding-bottom:0">
+      <div class="section-head"><h2>More free tools</h2></div>
+      <div class="tools-grid">
+        <a class="tool-card" href="words-to-minutes.html"><span class="kicker">Calculator</span><h3>Words to minutes</h3><p>Convert any word count to speaking time, for scripts, speeches, and voiceovers.</p><span class="go">Open the tool &rarr;</span></a>
+        <a class="tool-card" href="speech-to-text-accuracy-test.html"><span class="kicker">Mic test</span><h3>Speech to text accuracy test</h3><p>Read a passage, get scored on how well speech recognition hears you.</p><span class="go">Open the tool &rarr;</span></a>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap foot-inner">
+    <a class="brand" href="../index.html">
+      <img class="logo" src="../images/icon.png" alt="" width="26" height="26" style="width:26px;height:26px" onerror="this.style.display='none'">
+      OpenFlow
+    </a>
+    <span>MIT licensed. Built with Swift.</span>
+    <div class="foot-links">
+      <a href="index.html">Free tools</a>
+      <a href="https://github.com/Robj1925/open-flow">GitHub</a>
+      <a href="https://github.com/Robj1925/open-flow/releases">Releases</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  var TEST_MS = 30000;      // full test length
+  var MIN_MS = 10000;       // minimum for a valid result
+  var LIVE_AFTER_MS = 5000; // show live WPM only after this
+  var TYPING_WPM = 40;      // average typing speed for the comparison stat
+
+  // ---------- topic prompts ----------
+  var prompts = [
+    'Describe your morning so far, from the moment you woke up.',
+    'Explain your job to a 10 year old.',
+    'Talk through the plot of the last movie or show you watched.',
+    'Describe your dream vacation in as much detail as you can.',
+    'Explain how to make your favorite meal, step by step.',
+    'Pitch your favorite app or gadget to a skeptical friend.',
+    'Describe your hometown to someone who has never been there.',
+    'Explain a hobby you love and why it hooked you.'
+  ];
+  var promptText = $('promptText'), promptIdx = 0;
+  $('promptBtn').addEventListener('click', function(){
+    var i = promptIdx;
+    while (i === promptIdx){ i = Math.floor(Math.random() * prompts.length); }
+    promptIdx = i;
+    promptText.textContent = prompts[i];
+  });
+
+  // ---------- helpers ----------
+  function countWords(s){ s = (s || '').trim(); return s ? s.split(/\s+/).length : 0; }
+  function fmtClock(ms){
+    var t = Math.max(0, Math.round(ms / 1000));
+    var m = Math.floor(t / 60), s = t % 60;
+    return m + ':' + (s < 10 ? '0' : '') + s;
+  }
+  function fmtMult(wpm){
+    var m = Math.round((wpm / TYPING_WPM) * 10) / 10;
+    return (m % 1 === 0 ? m.toFixed(0) : m.toFixed(1)) + 'x';
+  }
+  function interpretation(wpm){
+    if (wpm < 110) return wpm + ' wpm is measured and deliberate. That is a great pace for presentations and teaching, where the audience needs time to absorb each point.';
+    if (wpm <= 150) return wpm + ' wpm is the conversational sweet spot: easy to follow, natural to listen to, and right where most everyday English lands.';
+    if (wpm <= 190) return wpm + ' wpm is energetic and fast. Great for storytelling with friends, but plan to slow down and add pauses when you present.';
+    return wpm + ' wpm is auctioneer territory. Listeners may struggle to keep up, so build in pauses and let your key points land.';
+  }
+
+  // ---------- shared result ----------
+  var resultBlock = $('resultBlock'), wpmNum = $('wpmNum');
+  var statWords = $('statWords'), statDuration = $('statDuration'), statMult = $('statMult');
+  var interpNotice = $('interpNotice'), interpText = $('interpText');
+
+  function showResult(words, ms){
+    if (ms <= 0) return;
+    var wpm = Math.round(words / (ms / 60000));
+    wpmNum.textContent = wpm;
+    statWords.textContent = words;
+    statDuration.textContent = Math.round(ms / 1000) + 's';
+    statMult.textContent = fmtMult(wpm);
+    interpText.textContent = interpretation(wpm);
+    interpNotice.classList.toggle('warn', wpm > 190);
+    resultBlock.hidden = false;
+    resultBlock.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  // ---------- mode selection ----------
+  var speechModeEl = $('speechMode'), fallbackEl = $('fallbackMode');
+  var passageWords = countWords($('passage').textContent);
+  $('passageCount').textContent = 'The passage is ' + passageWords + ' words long. At a typical pace it takes under a minute.';
+
+  if (!SR){
+    speechModeEl.hidden = true;
+    fallbackEl.hidden = false;
+  }
+
+  // ---------- speech mode ----------
+  if (SR){
+    var recBtn = $('recBtn'), micIcon = $('micIcon'), stopIcon = $('stopIcon');
+    var recStatus = $('recStatus'), countdown = $('countdown');
+    var liveWords = $('liveWords'), liveWpm = $('liveWpm');
+    var running = false, startTime = 0, timerId = null, lastSec = -1;
+    var finalText = '', interimText = '', rec = null;
+
+    var setStatus = function(msg){ recStatus.textContent = msg; };
+
+    var resetLive = function(){
+      lastSec = -1;
+      countdown.textContent = '0:30';
+      liveWords.textContent = '0';
+      liveWpm.textContent = '...';
+    };
+
+    var updateLive = function(){
+      var elapsed = Date.now() - startTime;
+      var words = countWords(finalText + ' ' + interimText);
+      liveWords.textContent = words;
+      if (elapsed >= LIVE_AFTER_MS){
+        liveWpm.textContent = Math.round(words / (elapsed / 60000));
+      }
+    };
+
+    var stopEverything = function(){
+      running = false;
+      if (timerId){ clearInterval(timerId); timerId = null; }
+      recBtn.classList.remove('recording');
+      recBtn.setAttribute('aria-label', 'Start the 30 second speaking test');
+      micIcon.style.display = '';
+      stopIcon.style.display = 'none';
+      if (rec){ try { rec.stop(); } catch (e) {} }
+    };
+
+    var finish = function(){
+      var elapsed = Math.min(Date.now() - startTime, TEST_MS);
+      stopEverything();
+      showResult(countWords(finalText + ' ' + interimText), elapsed);
+      setStatus('Done. Your result is below. Click the mic to run it again.');
+    };
+
+    var cancel = function(msg){
+      stopEverything();
+      resetLive();
+      setStatus(msg);
+    };
+
+    var tick = function(){
+      var elapsed = Date.now() - startTime;
+      var remaining = Math.max(0, TEST_MS - elapsed);
+      var secs = Math.ceil(remaining / 1000);
+      if (secs !== lastSec){ lastSec = secs; countdown.textContent = fmtClock(secs * 1000); }
+      updateLive();
+      if (elapsed >= TEST_MS) finish();
+    };
+
+    var start = function(){
+      finalText = '';
+      interimText = '';
+      resultBlock.hidden = true;
+      resetLive();
+
+      rec = new SR();
+      rec.lang = 'en-US';
+      rec.continuous = true;
+      rec.interimResults = true;
+      rec.onresult = function(e){
+        interimText = '';
+        for (var i = e.resultIndex; i < e.results.length; i++){
+          var t = e.results[i][0].transcript;
+          if (e.results[i].isFinal) finalText += ' ' + t;
+          else interimText += ' ' + t;
+        }
+        if (running) updateLive();
+      };
+      rec.onend = function(){
+        // The engine times out on silence; keep it alive for the whole test.
+        if (running){ try { rec.start(); } catch (e) {} }
+      };
+      rec.onerror = function(e){
+        if (e.error === 'not-allowed' || e.error === 'service-not-allowed'){
+          cancel('Microphone access was blocked. Allow the mic for this page and try again, or use the reading test below.');
+          fallbackEl.hidden = false;
+        }
+        // 'no-speech' and friends are recovered by the onend restart.
+      };
+      try { rec.start(); } catch (e) {}
+
+      running = true;
+      startTime = Date.now();
+      recBtn.classList.add('recording');
+      recBtn.setAttribute('aria-label', 'Stop the test');
+      micIcon.style.display = 'none';
+      stopIcon.style.display = '';
+      setStatus('Listening. Keep talking until the timer hits zero, or click again to stop early.');
+      timerId = setInterval(tick, 100);
+    };
+
+    recBtn.addEventListener('click', function(){
+      if (!running){ start(); return; }
+      var elapsed = Date.now() - startTime;
+      if (elapsed < MIN_MS){
+        cancel('Stopped at under 10 seconds, which is too short for a fair number. Click the mic to start over.');
+      } else {
+        finish();
+      }
+    });
+  }
+
+  // ---------- reading fallback ----------
+  var readStart = $('readStart'), readStop = $('readStop');
+  var readClock = $('readClock'), readStatus = $('readStatus');
+  var readT0 = 0, readTimer = null, lastReadSec = -1;
+
+  readStart.addEventListener('click', function(){
+    resultBlock.hidden = true;
+    readT0 = Date.now();
+    lastReadSec = -1;
+    readClock.textContent = '0:00';
+    readStart.disabled = true;
+    readStop.disabled = false;
+    readStatus.textContent = 'Timer running. Read the whole passage out loud at your natural pace.';
+    readTimer = setInterval(function(){
+      var s = Math.floor((Date.now() - readT0) / 1000);
+      if (s !== lastReadSec){ lastReadSec = s; readClock.textContent = fmtClock(s * 1000); }
+    }, 200);
+  });
+
+  readStop.addEventListener('click', function(){
+    var elapsed = Date.now() - readT0;
+    if (readTimer){ clearInterval(readTimer); readTimer = null; }
+    readStart.disabled = false;
+    readStop.disabled = true;
+    if (elapsed < MIN_MS){
+      readClock.textContent = '0:00';
+      readStatus.textContent = 'Under 10 seconds is too quick to score. Click Start reading and read the full passage.';
+      return;
+    }
+    readStatus.textContent = 'Done. Your result is below.';
+    showResult(passageWords, elapsed);
+  });
+})();
+</script>
+</body>
+</html>
