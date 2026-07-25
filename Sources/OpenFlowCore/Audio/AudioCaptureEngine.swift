@@ -4,7 +4,7 @@ import Foundation
 
 /// Captures microphone audio and accumulates it as 16 kHz mono Float32 samples.
 ///
-/// Capture starts synchronously on `start()`; the honest "mic is live" signal is
+/// Capture starts on `start()`; the honest "mic is live" signal is
 /// `onFirstBuffer`, which fires when the first real audio buffer arrives — play
 /// the ready tone there, never at hotkey-down (avoids the first-word-loss bug).
 ///
@@ -14,6 +14,13 @@ import Foundation
 /// path: mid-recording the tap is reinstalled with the fresh hardware format and
 /// the accumulated 16 kHz samples survive; while idle the graph is re-prepared
 /// so the next `start()` never sees a stale sample rate.
+///
+/// Threading: every AVAudioEngine call is confined to a private serial queue.
+/// Bringing up an input device can block for seconds (Bluetooth mics
+/// renegotiate on connect), and blocking the main thread also starves the
+/// CGEventTap watching the dictation hotkey — macOS disables unresponsive
+/// taps, which is how a device switch used to take the fn key down with it.
+/// All public callbacks fire on the main queue.
 public final class AudioCaptureEngine {
     public struct Capture {
         public let samples: [Float]
@@ -41,14 +48,19 @@ public final class AudioCaptureEngine {
     /// Fired on the main queue when the input device disappeared mid-session and
     /// capture could not resume; owner should finish with what was recorded.
     public var onInputDeviceLost: (() -> Void)?
+    /// Fired on the main queue when `start()` could not bring the mic up.
+    public var onStartFailed: ((Error) -> Void)?
 
     private let engine = AVAudioEngine()
+    /// Confines all engine/CoreAudio work; see the threading note above.
+    private let sessionQueue = DispatchQueue(label: "dev.openflow.audio-session")
     private let lock = NSLock()
     private var samples: [Float] = []
     private var peakRMS: Float = 0
     private var firstBufferSeen = false
     private var maxDurationFired = false
     private var converter: AVAudioConverter?
+    /// sessionQueue-confined.
     private var isRunning = false
 
     private let outputFormat = AVAudioFormat(
@@ -108,33 +120,109 @@ public final class AudioCaptureEngine {
 
     /// Pre-allocates the audio graph so `start()` is fast (~100 ms instead of ~500 ms).
     public func prepare() {
-        _ = engine.inputNode // force graph creation
-        engine.prepare()
-    }
-
-    public func start() throws {
-        lock.lock()
-        samples.removeAll(keepingCapacity: true)
-        samples.reserveCapacity(Int(Self.targetSampleRate * 60))
-        peakRMS = 0
-        firstBufferSeen = false
-        maxDurationFired = false
-        lock.unlock()
-
-        do {
-            try activate()
-        } catch {
-            // One retry on a fully reset graph: covers a device swap the
-            // listeners have not reconciled yet (e.g. it happened during sleep).
-            engine.stop()
-            engine.reset()
-            try activate()
+        sessionQueue.async { [weak self] in
+            guard let self else { return }
+            _ = self.engine.inputNode // force graph creation
+            self.engine.prepare()
         }
     }
 
+    /// Begins capture. Returns immediately; failure to bring the mic up is
+    /// reported via `onStartFailed` so the caller's thread never blocks on
+    /// device negotiation.
+    public func start() {
+        startInternal { [weak self] error in
+            guard let error else { return }
+            DispatchQueue.main.async { self?.onStartFailed?(error) }
+        }
+    }
+
+    /// Async variant for CLI/tools: returns once the mic is live, throws if it
+    /// could not start.
+    public func startAndWait() async throws {
+        try await withCheckedThrowingContinuation { (cont: CheckedContinuation<Void, Error>) in
+            startInternal { error in
+                if let error {
+                    cont.resume(throwing: error)
+                } else {
+                    cont.resume()
+                }
+            }
+        }
+    }
+
+    /// `completion` is invoked exactly once, on the session queue.
+    private func startInternal(_ completion: @escaping (Error?) -> Void) {
+        sessionQueue.async { [weak self] in
+            guard let self else {
+                completion(NSError(domain: "OpenFlow.Audio", code: 2, userInfo: [
+                    NSLocalizedDescriptionKey: "Audio engine was deallocated.",
+                ]))
+                return
+            }
+            self.lock.lock()
+            self.samples.removeAll(keepingCapacity: true)
+            self.samples.reserveCapacity(Int(Self.targetSampleRate * 60))
+            self.peakRMS = 0
+            self.firstBufferSeen = false
+            self.maxDurationFired = false
+            self.lock.unlock()
+
+            do {
+                try self.activate()
+                completion(nil)
+            } catch {
+                // One retry on a fully reset graph: covers a device swap the
+                // listeners have not reconciled yet (e.g. it happened during
+                // sleep).
+                self.engine.stop()
+                self.engine.reset()
+                do {
+                    try self.activate()
+                    completion(nil)
+                } catch {
+                    completion(error)
+                }
+            }
+        }
+    }
+
+    /// Stops capture and delivers everything recorded this session on the main
+    /// queue.
+    public func stop(_ completion: @escaping (Capture) -> Void) {
+        sessionQueue.async { [weak self] in
+            let capture = self?.tearDownAndCollect()
+                ?? Capture(samples: [], duration: 0, peakRMS: 0)
+            DispatchQueue.main.async { completion(capture) }
+        }
+    }
+
+    /// Async variant for CLI/tools.
+    public func stopAndWait() async -> Capture {
+        await withCheckedContinuation { cont in
+            sessionQueue.async { [weak self] in
+                cont.resume(returning: self?.tearDownAndCollect()
+                    ?? Capture(samples: [], duration: 0, peakRMS: 0))
+            }
+        }
+    }
+
+    /// Stops capture and discards the audio.
+    public func cancel() {
+        sessionQueue.async { [weak self] in
+            guard let self else { return }
+            self.tearDown()
+            self.lock.lock()
+            self.samples.removeAll()
+            self.lock.unlock()
+        }
+    }
+
+    // MARK: - sessionQueue internals
+
     /// Installs the tap against the current hardware format and starts the
     /// engine. Session state (accumulated samples) is untouched, so this is
-    /// safe both for a fresh `start()` and for a mid-recording device rebuild.
+    /// safe both for a fresh start and for a mid-recording device rebuild.
     private func activate() throws {
         let input = engine.inputNode
         let hwFormat = input.outputFormat(forBus: 0)
@@ -154,11 +242,34 @@ public final class AudioCaptureEngine {
         isRunning = true
     }
 
+    private func tearDown() {
+        guard isRunning else { return }
+        isRunning = false
+        engine.inputNode.removeTap(onBus: 0)
+        engine.stop()
+    }
+
+    private func tearDownAndCollect() -> Capture {
+        tearDown()
+        lock.lock()
+        let out = samples
+        let peak = peakRMS
+        lock.unlock()
+        return Capture(
+            samples: out,
+            duration: Double(out.count) / Self.targetSampleRate,
+            peakRMS: peak
+        )
+    }
+
     /// Coalesces the burst of notifications a single device switch produces
-    /// (CoreAudio + engine notification, sometimes several of each).
+    /// (CoreAudio + engine notification, sometimes several of each). Main queue.
     private func scheduleReconfigure() {
         pendingReconfigure?.cancel()
-        let work = DispatchWorkItem { [weak self] in self?.reconfigure() }
+        let work = DispatchWorkItem { [weak self] in
+            guard let self else { return }
+            self.sessionQueue.async { self.reconfigure() }
+        }
         pendingReconfigure = work
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.15, execute: work)
     }
@@ -176,7 +287,7 @@ public final class AudioCaptureEngine {
                 try activate()
             } catch {
                 isRunning = false
-                onInputDeviceLost?()
+                DispatchQueue.main.async { [weak self] in self?.onInputDeviceLost?() }
             }
         } else {
             // Idle: refresh the prepared graph so the next start() sees the new
@@ -186,35 +297,6 @@ public final class AudioCaptureEngine {
             _ = engine.inputNode
             engine.prepare()
         }
-    }
-
-    /// Stops capture and returns everything recorded this session.
-    public func stop() -> Capture {
-        tearDown()
-        lock.lock()
-        let out = samples
-        let peak = peakRMS
-        lock.unlock()
-        return Capture(
-            samples: out,
-            duration: Double(out.count) / Self.targetSampleRate,
-            peakRMS: peak
-        )
-    }
-
-    /// Stops capture and discards the audio.
-    public func cancel() {
-        tearDown()
-        lock.lock()
-        samples.removeAll()
-        lock.unlock()
-    }
-
-    private func tearDown() {
-        guard isRunning else { return }
-        isRunning = false
-        engine.inputNode.removeTap(onBus: 0)
-        engine.stop()
     }
 
     private func process(_ buffer: AVAudioPCMBuffer) {

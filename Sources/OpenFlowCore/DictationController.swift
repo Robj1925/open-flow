@@ -100,6 +100,12 @@ public final class DictationController: ObservableObject {
         // Input device vanished mid-recording (e.g. AirPods disconnected) and
         // capture could not resume: transcribe whatever was captured so far.
         audio.onInputDeviceLost = { [weak self] in self?.finishRecording() }
+        // start() is asynchronous (device bring-up can take seconds on
+        // Bluetooth); a failed start lands here instead of throwing.
+        audio.onStartFailed = { [weak self] error in
+            guard let self, case .recording = self.state else { return }
+            self.transition(to: .idle, status: "Microphone unavailable: \(error.localizedDescription)")
+        }
     }
 
     private func hotkeyDown() {
@@ -161,32 +167,34 @@ public final class DictationController: ObservableObject {
         // Warm the cleanup model while the user is still speaking — covers
         // Apple Intelligence being enabled mid-session (no-op when warm).
         if settings.cleanupEnabled { cleaner.prewarm() }
-        do {
-            try audio.start()
-            transition(to: .recording(mode: settings.activationMode, startedAt: Date()), status: nil)
-        } catch {
-            transition(to: .idle, status: "Microphone unavailable: \(error.localizedDescription)")
-        }
+        // Optimistic transition: start() never blocks (device bring-up runs on
+        // the audio session queue), and a failure rolls back via onStartFailed.
+        audio.start()
+        transition(to: .recording(mode: settings.activationMode, startedAt: Date()), status: nil)
     }
 
     private func finishRecording() {
         guard case .recording = state else { return }
         toggleArmed = false
-        let capture = audio.stop()
-
-        // Energy gate: never transcribed, never injected.
-        let filter = HallucinationFilter()
-        guard capture.peakRMS >= filter.minimumPeakRMS,
-              capture.duration >= filter.minimumDuration else {
-            sounds.play(.cancel)
-            transition(to: .idle, status: "Heard nothing")
-            return
-        }
 
         generation += 1
         let thisGeneration = generation
         transition(to: .transcribing(generation: thisGeneration), status: nil)
-        Task { await transcribeAndInject(capture, generation: thisGeneration) }
+        audio.stop { [weak self] capture in
+            guard let self else { return }
+            // Esc while the mic was winding down bumps the generation.
+            guard self.generation == thisGeneration, self.state.isTranscribing else { return }
+
+            // Energy gate: never transcribed, never injected.
+            let filter = HallucinationFilter()
+            guard capture.peakRMS >= filter.minimumPeakRMS,
+                  capture.duration >= filter.minimumDuration else {
+                self.sounds.play(.cancel)
+                self.transition(to: .idle, status: "Heard nothing")
+                return
+            }
+            Task { await self.transcribeAndInject(capture, generation: thisGeneration) }
+        }
     }
 
     private func transcribeAndInject(_ capture: AudioCaptureEngine.Capture, generation thisGeneration: Int) async {

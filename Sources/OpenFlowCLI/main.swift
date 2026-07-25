@@ -29,9 +29,9 @@ func record(seconds: TimeInterval) async throws -> AudioCaptureEngine.Capture {
     let audio = AudioCaptureEngine()
     audio.prepare()
     audio.onFirstBuffer = { print("🎙  Mic is live — speak now (\(Int(seconds))s)…") }
-    try audio.start()
+    try await audio.startAndWait()
     try await Task.sleep(nanoseconds: UInt64(seconds * 1_000_000_000))
-    let capture = audio.stop()
+    let capture = await audio.stopAndWait()
     print(String(format: "Captured %.1fs of audio (peak RMS %.4f)", capture.duration, capture.peakRMS))
     return capture
 }
