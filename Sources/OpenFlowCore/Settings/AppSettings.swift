@@ -19,6 +19,11 @@ public final class AppSettings: ObservableObject {
         static let historyEnabled = "historyEnabled"
         static let onboardingCompleted = "onboardingCompleted"
         static let cleanupEnabled = "cleanupEnabled"
+        static let readAloudSpeed = "readAloudSpeed"
+        static let readAloudHotkey = "readAloudHotkey"
+        static let livePreviewEnabled = "livePreviewEnabled"
+        static let streamingPreviewEnabled = "streamingPreviewEnabled"
+        static let streamingPreviewTier = "streamingPreviewTier"
     }
 
     private init() {
@@ -79,6 +84,37 @@ public final class AppSettings: ObservableObject {
     /// On by default; silently no-ops when Apple Intelligence is unavailable.
     @Published public var cleanupEnabled: Bool = UserDefaults.standard.object(forKey: Key.cleanupEnabled) as? Bool ?? true {
         didSet { defaults.set(cleanupEnabled, forKey: Key.cleanupEnabled) }
+    }
+
+    /// Show words on screen as they are recognized while the hotkey is held.
+    @Published public var livePreviewEnabled: Bool = UserDefaults.standard.object(forKey: Key.livePreviewEnabled) as? Bool ?? true {
+        didSet { defaults.set(livePreviewEnabled, forKey: Key.livePreviewEnabled) }
+    }
+
+    /// Drive the live preview with the Parakeet Unified streaming model
+    /// (English only, separate download) instead of re-running the dictation
+    /// model on the audio so far.
+    @Published public var streamingPreviewEnabled: Bool = UserDefaults.standard.bool(forKey: Key.streamingPreviewEnabled) {
+        didSet { defaults.set(streamingPreviewEnabled, forKey: Key.streamingPreviewEnabled) }
+    }
+
+    /// `StreamingPreviewEngine.Tier` raw value; each tier is its own download.
+    @Published public var streamingPreviewTier: String = UserDefaults.standard.string(forKey: Key.streamingPreviewTier) ?? "320" {
+        didSet { defaults.set(streamingPreviewTier, forKey: Key.streamingPreviewTier) }
+    }
+
+    /// Read Aloud speech rate multiplier (1.0 = Kokoro's natural pace).
+    @Published public var readAloudSpeed: Double = {
+        let stored = UserDefaults.standard.double(forKey: Key.readAloudSpeed)
+        return stored > 0 ? stored : 1.0
+    }() {
+        didSet { defaults.set(readAloudSpeed, forKey: Key.readAloudSpeed) }
+    }
+
+    @Published public var readAloudHotkey: ReadAloudHotkey = ReadAloudHotkey(
+        rawValue: UserDefaults.standard.string(forKey: Key.readAloudHotkey) ?? ""
+    ) ?? .controlOptionR {
+        didSet { defaults.set(readAloudHotkey.rawValue, forKey: Key.readAloudHotkey) }
     }
 
     @Published public var onboardingCompleted: Bool = UserDefaults.standard.bool(forKey: Key.onboardingCompleted) {

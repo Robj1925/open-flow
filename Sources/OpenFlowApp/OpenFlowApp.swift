@@ -8,9 +8,17 @@ final class AppState {
 
     let settings = AppSettings.shared
     let controller = DictationController()
+    let readAloud = ReadAloudController()
     let permissions = PermissionsService()
 
-    private init() {}
+    private init() {
+        controller.onEscWhileIdle = { [readAloud] in
+            guard readAloud.isActive else { return false }
+            readAloud.stop()
+            return true
+        }
+        controller.onReadAloudHotkey = { [readAloud] in readAloud.speakSelection() }
+    }
 }
 
 @main
@@ -37,6 +45,7 @@ struct OpenFlowApp: App {
 
 private struct MenuBarLabel: View {
     @ObservedObject private var controller = AppState.shared.controller
+    @ObservedObject private var readAloud = AppState.shared.readAloud
 
     var body: some View {
         Image(systemName: iconName)
@@ -45,6 +54,7 @@ private struct MenuBarLabel: View {
     private var iconName: String {
         switch controller.state {
         case .idle:
+            if readAloud.isActive { return "speaker.wave.2.fill" }
             if case .ready = controller.modelState { return "mic" }
             return "mic.badge.xmark"
         case .recording: return "mic.fill"
@@ -69,6 +79,7 @@ private func focusWindow(matching predicate: @escaping (NSWindow) -> Bool) {
 
 private struct MenuContentView: View {
     @ObservedObject private var controller = AppState.shared.controller
+    @ObservedObject private var readAloud = AppState.shared.readAloud
     @ObservedObject private var settings = AppState.shared.settings
     @Environment(\.openWindow) private var openWindow
     @Environment(\.openSettings) private var openSettings
@@ -105,6 +116,20 @@ private struct MenuContentView: View {
 
         Divider()
 
+        if readAloud.isActive {
+            Button("Stop Reading") {
+                readAloud.stop()
+            }
+            .keyboardShortcut(".")
+        } else {
+            Text(settings.readAloudHotkey == .off
+                 ? "Select text, right-click, Read Aloud with OpenFlow"
+                 : "Select text, press \(settings.readAloudHotkey.displayName) to read aloud")
+                .font(.caption)
+        }
+
+        Divider()
+
         Button("Quit OpenFlow") {
             NSApp.terminate(nil)
         }
@@ -119,7 +144,12 @@ private struct MenuContentView: View {
         case .failed(let message): return "Model error: \(message)"
         case .ready:
             switch controller.state {
-            case .idle: return "Ready — \(settings.modelPreset.displayName)"
+            case .idle:
+                switch readAloud.state {
+                case .preparing: return "Loading voice…"
+                case .speaking: return "Reading aloud…"
+                case .idle, .failed: return "Ready — \(settings.modelPreset.displayName)"
+                }
             case .recording: return "Listening…"
             case .transcribing: return "Transcribing…"
             case .injecting: return "Inserting text…"

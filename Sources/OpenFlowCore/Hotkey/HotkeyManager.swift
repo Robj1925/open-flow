@@ -47,9 +47,54 @@ public enum DictationHotkey: String, Codable, CaseIterable, Sendable {
     }
 }
 
+/// Global chord that reads the current selection aloud. Works in every app,
+/// including Electron ones (VS Code, Slack, Discord) whose custom context
+/// menus never show the macOS Services item.
+public enum ReadAloudHotkey: String, Codable, CaseIterable, Sendable {
+    case controlOptionR
+    case controlOptionS
+    case f18
+    case off
+
+    public var displayName: String {
+        switch self {
+        case .controlOptionR: return "⌃⌥R"
+        case .controlOptionS: return "⌃⌥S"
+        case .f18: return "F18"
+        case .off: return "Off"
+        }
+    }
+
+    var keyCode: Int64? {
+        switch self {
+        case .controlOptionR: return 15 // kVK_ANSI_R
+        case .controlOptionS: return 1  // kVK_ANSI_S
+        case .f18: return 79            // kVK_F18
+        case .off: return nil
+        }
+    }
+
+    /// Modifiers that must all be held; ⌘ and ⇧ must not be.
+    var requiredFlags: CGEventFlags {
+        switch self {
+        case .controlOptionR, .controlOptionS: return [.maskControl, .maskAlternate]
+        case .f18, .off: return []
+        }
+    }
+
+    public func matches(keyCode: Int64, flags: CGEventFlags) -> Bool {
+        guard let expected = self.keyCode, keyCode == expected else { return false }
+        let relevant: CGEventFlags = [.maskControl, .maskAlternate, .maskCommand, .maskShift]
+        return flags.intersection(relevant) == requiredFlags
+    }
+}
+
 /// Turns raw tap events into semantic hotkey-down / hotkey-up / esc signals.
 public final class HotkeyManager {
     public var hotkey: DictationHotkey = .fn
+    public var readAloudHotkey: ReadAloudHotkey = .controlOptionR
+    /// Read Aloud chord pressed (main thread). The keystroke is swallowed.
+    public var onReadAloudHotkey: (() -> Void)?
 
     /// Called on hotkey press (main thread — the tap runs on the main run loop).
     public var onHotkeyDown: (() -> Void)?
@@ -112,6 +157,11 @@ public final class HotkeyManager {
                 pressedAt = nil
                 onHotkeyUp?(Date().timeIntervalSince(started))
             }
+            return true
+
+        case .keyDown where readAloudHotkey.matches(keyCode: keyCode, flags: event.flags):
+            let isRepeat = event.getIntegerValueField(.keyboardEventAutorepeat) != 0
+            if !isRepeat { onReadAloudHotkey?() }
             return true
 
         case .keyDown where keyCode == 53: // kVK_Escape

@@ -3,15 +3,20 @@ import SwiftUI
 
 struct RecordingHUDView: View {
     @ObservedObject private var controller = AppState.shared.controller
+    @ObservedObject private var readAloud = AppState.shared.readAloud
     @State private var levels: [Float] = Array(repeating: 0, count: 26)
 
     var body: some View {
         HStack(spacing: 10) {
             switch controller.state {
             case .recording:
+                // Grey until the first audio buffer arrives (~0.3 s), red once
+                // the mic is really open, so the pill never claims to listen
+                // before it does.
                 Circle()
-                    .fill(.red)
+                    .fill(controller.micLive ? Color.red : Color.secondary.opacity(0.45))
                     .frame(width: 9, height: 9)
+                    .animation(.easeOut(duration: 0.15), value: controller.micLive)
                 waveform
             case .transcribing:
                 ProgressView()
@@ -23,11 +28,28 @@ struct RecordingHUDView: View {
                 Text("Inserting…")
                     .font(.callout.weight(.medium))
             case .idle:
-                if let message = controller.statusMessage {
+                switch readAloud.state {
+                case .preparing:
+                    ProgressView()
+                        .controlSize(.small)
+                    Text(preparingLabel)
+                        .font(.callout.weight(.medium))
+                case .speaking:
+                    Image(systemName: "speaker.wave.2.fill")
+                    Text("Reading aloud — Esc to stop")
+                        .font(.callout.weight(.medium))
+                case .failed(let message):
                     Image(systemName: "info.circle")
                     Text(message)
                         .font(.callout)
                         .lineLimit(2)
+                case .idle:
+                    if let message = controller.statusMessage {
+                        Image(systemName: "info.circle")
+                        Text(message)
+                            .font(.callout)
+                            .lineLimit(2)
+                    }
                 }
             }
         }
@@ -44,6 +66,11 @@ struct RecordingHUDView: View {
         .onChange(of: controller.state.isRecording) { _, recording in
             if recording { levels = Array(repeating: 0, count: levels.count) }
         }
+    }
+
+    private var preparingLabel: String {
+        if case .downloading = readAloud.voiceState { return "Downloading voice (one time)…" }
+        return "Loading voice…"
     }
 
     private var waveform: some View {

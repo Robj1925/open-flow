@@ -42,6 +42,7 @@ private struct GeneralSettingsView: View {
                     Text("Hold to talk").tag(ActivationMode.hold)
                     Text("Toggle (tap to start/stop)").tag(ActivationMode.toggle)
                 }
+                Toggle("Show words on screen as you speak", isOn: $settings.livePreviewEnabled)
                 Picker("Language", selection: $settings.language) {
                     ForEach(languages, id: \.code) { language in
                         Text(language.name).tag(language.code)
@@ -77,6 +78,8 @@ private struct GeneralSettingsView: View {
                 Toggle("Play sounds", isOn: $settings.soundsEnabled)
                 Toggle("Save dictation history", isOn: $settings.historyEnabled)
             }
+
+            ReadAloudSettingsSection()
 
             Section("System") {
                 Toggle("Launch at login", isOn: $launchAtLogin)
@@ -129,6 +132,93 @@ private struct GeneralSettingsView: View {
     }
 }
 
+// MARK: - Read Aloud
+
+private struct ReadAloudSettingsSection: View {
+    @ObservedObject private var settings = AppState.shared.settings
+    @ObservedObject private var readAloud = AppState.shared.readAloud
+    @ObservedObject private var controller = AppState.shared.controller
+    @State private var refreshToken = 0
+
+    private static let sample = "OpenFlow reads selected text aloud, entirely on this Mac."
+
+    var body: some View {
+        Section {
+            Picker("Hotkey", selection: $settings.readAloudHotkey) {
+                ForEach(ReadAloudHotkey.allCases, id: \.self) { key in
+                    Text(key.displayName).tag(key)
+                }
+            }
+            .onChange(of: settings.readAloudHotkey) { _, _ in controller.settingsChanged() }
+            HStack {
+                Text("Speed")
+                Slider(value: $settings.readAloudSpeed, in: 0.7...1.4, step: 0.05)
+                Text(String(format: "%.2f×", settings.readAloudSpeed))
+                    .monospacedDigit()
+                    .frame(width: 48, alignment: .trailing)
+                    .foregroundStyle(.secondary)
+            }
+            LabeledContent("Voice") {
+                HStack(spacing: 8) {
+                    Text(voiceStatus)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    voiceActions
+                }
+            }
+        } header: {
+            Text("Read Aloud")
+        } footer: {
+            Text("Select text, then press the hotkey (works in every app) or right-click and choose “Read Aloud with OpenFlow” (native apps and Chrome; Electron apps such as VS Code, Slack and Discord do not show Services in their menus). Esc or the hotkey stops. Kokoro voice, Apache 2.0, English.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+        .id(refreshToken)
+    }
+
+    private var voiceStatus: String {
+        switch readAloud.voiceState {
+        case .downloading: return "Downloading…"
+        case .loading: return "Loading…"
+        case .failed(let message): return "Failed: \(message)"
+        case .ready, .unloaded:
+            if KokoroSpeechSynthesizer.isDownloaded {
+                let size = ByteCountFormatter.string(fromByteCount: KokoroSpeechSynthesizer.diskUsage, countStyle: .file)
+                return readAloud.voiceState == .ready ? "Kokoro ready (\(size))" : "Kokoro on disk (\(size))"
+            }
+            return "Not downloaded (\(KokoroSpeechSynthesizer.approxSize))"
+        }
+    }
+
+    @ViewBuilder
+    private var voiceActions: some View {
+        switch readAloud.voiceState {
+        case .downloading, .loading:
+            ProgressView().controlSize(.small)
+        default:
+            if readAloud.isActive {
+                Button("Stop") { readAloud.stop() }
+                    .controlSize(.small)
+            } else {
+                Button(KokoroSpeechSynthesizer.isDownloaded ? "Test" : "Download & Test") {
+                    readAloud.speak(Self.sample)
+                }
+                .controlSize(.small)
+            }
+            if KokoroSpeechSynthesizer.isDownloaded, !readAloud.isActive {
+                Button("Delete") {
+                    Task {
+                        await readAloud.unloadVoice()
+                        try? KokoroSpeechSynthesizer.deleteDownload()
+                        refreshToken += 1
+                    }
+                }
+                .controlSize(.small)
+            }
+        }
+    }
+}
+
 // MARK: - Models
 
 private struct ModelsSettingsView: View {
@@ -147,9 +237,72 @@ private struct ModelsSettingsView: View {
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
+
+            Section {
+                Toggle("Stream the live preview with Parakeet Unified", isOn: $settings.streamingPreviewEnabled)
+                    .onChange(of: settings.streamingPreviewEnabled) { _, _ in controller.settingsChanged() }
+                Picker("Latency", selection: $settings.streamingPreviewTier) {
+                    ForEach(StreamingPreviewEngine.Tier.allCases, id: \.rawValue) { tier in
+                        Text(tier.displayName).tag(tier.rawValue)
+                    }
+                }
+                .onChange(of: settings.streamingPreviewTier) { _, _ in controller.settingsChanged() }
+                .disabled(!settings.streamingPreviewEnabled)
+                HStack {
+                    streamingStatus
+                    Spacer()
+                    if StreamingPreviewEngine.isAnyTierDownloaded, !settings.streamingPreviewEnabled {
+                        Button("Delete") {
+                            try? StreamingPreviewEngine.deleteDownload()
+                            refreshToken += 1
+                        }
+                        .controlSize(.small)
+                    }
+                }
+                if settings.streamingPreviewEnabled, settings.language != "en" {
+                    Label("English only. The preview uses the dictation model for the selected language.", systemImage: "info.circle")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            } header: {
+                Text("Live preview")
+            } footer: {
+                Text("A true streaming recognizer: words appear about a third of a second after you say them and are never rewritten. English only, \(StreamingPreviewEngine.approxSize) per latency tier, loaded next to the dictation model. Off, the preview re-runs the dictation model on the audio so far.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
         }
         .formStyle(.grouped)
         .id(refreshToken)
+    }
+
+    @ViewBuilder
+    private var streamingStatus: some View {
+        let onDisk = StreamingPreviewEngine.isAnyTierDownloaded
+            ? "On disk: \(ByteCountFormatter.string(fromByteCount: StreamingPreviewEngine.diskUsage, countStyle: .file))"
+            : "Not downloaded (\(StreamingPreviewEngine.approxSize))"
+        switch controller.streamingPreviewState {
+        case .downloading(let progress):
+            HStack {
+                ProgressView(value: progress).frame(width: 120)
+                Text("Downloading… \(Int(progress * 100))%").font(.caption).foregroundStyle(.secondary)
+            }
+        case .loading:
+            HStack {
+                ProgressView().controlSize(.small)
+                Text("Loading…").font(.caption).foregroundStyle(.secondary)
+            }
+        case .ready:
+            Label("Ready. \(onDisk)", systemImage: "checkmark.circle.fill")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        case .failed(let message):
+            Label(message, systemImage: "exclamationmark.triangle.fill")
+                .font(.caption)
+                .foregroundStyle(.orange)
+        case .unloaded:
+            Text(onDisk).font(.caption).foregroundStyle(.secondary)
+        }
     }
 
     @ViewBuilder

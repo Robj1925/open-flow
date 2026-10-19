@@ -36,6 +36,34 @@ public final class AudioCaptureEngine {
     }
 
     public static let targetSampleRate: Double = 16_000
+    public static let errorDomain = "OpenFlow.Audio"
+
+    /// Why `start()` failed; recoverable from the error with `failure(of:)`.
+    public enum StartFailure: Int {
+        /// Input reports 0 Hz / 0 channels and no default input device exists.
+        case noInputDevice = 1
+        case engineDeallocated = 2
+        case unsupportedFormat = 3
+        /// macOS had not asked for microphone access yet; the prompt is up.
+        case permissionPending = 4
+        /// Microphone access is off for this app in System Settings.
+        case permissionDenied = 5
+        /// The grant looks enabled, but macOS is not honouring it for this
+        /// binary (typical after an ad-hoc rebuild changed the signature).
+        case grantStale = 6
+    }
+
+    public static func failure(of error: Error) -> StartFailure? {
+        let nsError = error as NSError
+        guard nsError.domain == errorDomain else { return nil }
+        return StartFailure(rawValue: nsError.code)
+    }
+
+    public static func makeError(_ failure: StartFailure, _ message: String) -> Error {
+        NSError(domain: errorDomain, code: failure.rawValue, userInfo: [
+            NSLocalizedDescriptionKey: message,
+        ])
+    }
     /// Hard cap on a single dictation.
     public var maxDuration: TimeInterval = 300
 
@@ -51,7 +79,9 @@ public final class AudioCaptureEngine {
     /// Fired on the main queue when `start()` could not bring the mic up.
     public var onStartFailed: ((Error) -> Void)?
 
-    private let engine = AVAudioEngine()
+    /// Replaced wholesale by `rebuildEngine()` when a start fails; see there.
+    /// sessionQueue-confined after init.
+    private var engine = AVAudioEngine()
     /// Confines all engine/CoreAudio work; see the threading note above.
     private let sessionQueue = DispatchQueue(label: "dev.openflow.audio-session")
     private let lock = NSLock()
@@ -82,13 +112,7 @@ public final class AudioCaptureEngine {
     public init() {
         // The engine posts this (and stops itself) when its I/O configuration
         // changes, e.g. the active input device is unplugged or renegotiated.
-        configChangeObserver = NotificationCenter.default.addObserver(
-            forName: .AVAudioEngineConfigurationChange,
-            object: engine,
-            queue: .main
-        ) { [weak self] _ in
-            self?.scheduleReconfigure()
-        }
+        observeEngine()
         // The engine notification alone is not enough: a default-device switch
         // while the engine sits idle can leave the prepared graph stale without
         // any notification, so listen to CoreAudio directly as well.
@@ -118,12 +142,54 @@ public final class AudioCaptureEngine {
         }
     }
 
+    /// Subscribes to the current engine's configuration-change notification.
+    private func observeEngine() {
+        if let observer = configChangeObserver {
+            NotificationCenter.default.removeObserver(observer)
+        }
+        configChangeObserver = NotificationCenter.default.addObserver(
+            forName: .AVAudioEngineConfigurationChange,
+            object: engine,
+            queue: .main
+        ) { [weak self] _ in
+            self?.scheduleReconfigure()
+        }
+    }
+
+    /// Replaces the AVAudioEngine with a fresh instance. `reset()` keeps the
+    /// same input node, and that node keeps the hardware format it was created
+    /// with: 0 Hz / 0 channels if it was first touched before the microphone
+    /// permission existed (the HAL hides input streams from unauthorized
+    /// processes). Only a new engine re-queries the hardware. sessionQueue.
+    private func rebuildEngine() {
+        try? ObjCExceptionGuard.run {
+            engine.inputNode.removeTap(onBus: 0)
+            engine.stop()
+        }
+        engine = AVAudioEngine()
+        converter = nil
+        observeEngine()
+    }
+
     /// Pre-allocates the audio graph so `start()` is fast (~100 ms instead of ~500 ms).
     public func prepare() {
         sessionQueue.async { [weak self] in
             guard let self else { return }
-            _ = self.engine.inputNode // force graph creation
-            self.engine.prepare()
+            // Touching inputNode before the microphone permission exists bakes
+            // a 0-channel format into the node for the engine's lifetime, so
+            // leave the graph alone until then; start() builds it on demand.
+            guard Self.microphoneAuthorized else {
+                TimingLog.shared.note("audio: prepare skipped, mic not authorized")
+                return
+            }
+            // prepare() raises an NSException when the input device has no
+            // usable format (nothing plugged in); swallow it and let start()
+            // report the problem through onStartFailed instead.
+            try? ObjCExceptionGuard.run {
+                _ = self.engine.inputNode // force graph creation
+                self.engine.prepare()
+            }
+            TimingLog.shared.note("audio: graph prepared")
         }
     }
 
@@ -155,9 +221,7 @@ public final class AudioCaptureEngine {
     private func startInternal(_ completion: @escaping (Error?) -> Void) {
         sessionQueue.async { [weak self] in
             guard let self else {
-                completion(NSError(domain: "OpenFlow.Audio", code: 2, userInfo: [
-                    NSLocalizedDescriptionKey: "Audio engine was deallocated.",
-                ]))
+                completion(Self.makeError(.engineDeallocated, "Audio engine was deallocated."))
                 return
             }
             self.lock.lock()
@@ -167,20 +231,31 @@ public final class AudioCaptureEngine {
             self.firstBufferSeen = false
             self.maxDurationFired = false
             self.lock.unlock()
+            TimingLog.shared.note("audio: start running on session queue")
 
+            if let denied = Self.microphoneAccessError() {
+                completion(denied)
+                return
+            }
+            let started = Date()
             do {
                 try self.activate()
+                TimingLog.shared.note("audio: engine started in \(Self.ms(since: started))")
                 completion(nil)
             } catch {
-                // One retry on a fully reset graph: covers a device swap the
+                TimingLog.shared.note("audio: first attempt failed in \(Self.ms(since: started)): \(error.localizedDescription)")
+                // One retry on a brand-new engine: covers a device swap the
                 // listeners have not reconciled yet (e.g. it happened during
-                // sleep).
-                self.engine.stop()
-                self.engine.reset()
+                // sleep) and an input node created before the microphone
+                // permission was granted.
+                self.rebuildEngine()
+                let retried = Date()
                 do {
                     try self.activate()
+                    TimingLog.shared.note("audio: engine started on retry in \(Self.ms(since: retried))")
                     completion(nil)
                 } catch {
+                    TimingLog.shared.note("audio: retry failed in \(Self.ms(since: retried)): \(error.localizedDescription)")
                     completion(error)
                 }
             }
@@ -207,6 +282,14 @@ public final class AudioCaptureEngine {
         }
     }
 
+    /// Copy of everything captured so far (16 kHz mono). Safe to call from
+    /// any thread while recording; used for live partial transcription.
+    public func samplesSoFar() -> [Float] {
+        lock.lock()
+        defer { lock.unlock() }
+        return samples
+    }
+
     /// Stops capture and discards the audio.
     public func cancel() {
         sessionQueue.async { [weak self] in
@@ -224,22 +307,55 @@ public final class AudioCaptureEngine {
     /// engine. Session state (accumulated samples) is untouched, so this is
     /// safe both for a fresh start and for a mid-recording device rebuild.
     private func activate() throws {
-        let input = engine.inputNode
-        let hwFormat = input.outputFormat(forBus: 0)
-        guard hwFormat.sampleRate > 0 else {
-            throw NSError(domain: "OpenFlow.Audio", code: 1, userInfo: [
-                NSLocalizedDescriptionKey: "No audio input device available.",
-            ])
-        }
-        converter = AVAudioConverter(from: hwFormat, to: outputFormat)
+        var input = engine.inputNode
+        var hwFormat = input.outputFormat(forBus: 0)
 
-        input.removeTap(onBus: 0)
-        input.installTap(onBus: 0, bufferSize: 1024, format: hwFormat) { [weak self] buffer, _ in
-            self?.process(buffer)
+        // The node's output format is cached from the last prepare(). If the
+        // default input changed since (built-in mic at 48 kHz → Bluetooth
+        // headset at 8 kHz, say) it is stale, and installing a tap with it
+        // raises "Failed to create tap due to format mismatch". Compare with
+        // the live hardware format and rebuild the graph when they differ.
+        let liveFormat = input.inputFormat(forBus: 0)
+        if !Self.sameShape(hwFormat, liveFormat) {
+            TimingLog.shared.note("audio: stale node format \(Int(hwFormat.sampleRate)) Hz/\(hwFormat.channelCount) ch vs live \(Int(liveFormat.sampleRate)) Hz/\(liveFormat.channelCount) ch → reset")
+            engine.stop()
+            engine.reset()
+            input = engine.inputNode
+            hwFormat = input.outputFormat(forBus: 0)
         }
-        engine.prepare()
-        try engine.start()
+        guard hwFormat.sampleRate > 0, hwFormat.channelCount > 0 else {
+            throw Self.noUsableInputError()
+        }
+        guard let converter = AVAudioConverter(from: hwFormat, to: outputFormat) else {
+            throw Self.makeError(.unsupportedFormat, "Unsupported input format \(Int(hwFormat.sampleRate)) Hz, \(hwFormat.channelCount) ch.")
+        }
+        self.converter = converter
+
+        // AVFoundation raises NSException (uncatchable from Swift) for format
+        // problems inside installTap/prepare; the guard converts that into a
+        // thrown error so start() can retry on a reset graph, then report.
+        var startError: Error?
+        try ObjCExceptionGuard.run {
+            input.removeTap(onBus: 0)
+            input.installTap(onBus: 0, bufferSize: 1024, format: hwFormat) { [weak self] buffer, _ in
+                self?.process(buffer)
+            }
+            engine.prepare()
+            do { try engine.start() } catch { startError = error }
+        }
+        if let startError {
+            input.removeTap(onBus: 0)
+            throw startError
+        }
         isRunning = true
+    }
+
+    private static func sameShape(_ a: AVAudioFormat, _ b: AVAudioFormat) -> Bool {
+        a.sampleRate == b.sampleRate && a.channelCount == b.channelCount
+    }
+
+    private static func ms(since start: Date) -> String {
+        "\(Int(Date().timeIntervalSince(start) * 1000)) ms"
     }
 
     private func tearDown() {
@@ -247,6 +363,7 @@ public final class AudioCaptureEngine {
         isRunning = false
         engine.inputNode.removeTap(onBus: 0)
         engine.stop()
+        TimingLog.shared.note("audio: stopped")
     }
 
     private func tearDownAndCollect() -> Capture {
@@ -276,6 +393,7 @@ public final class AudioCaptureEngine {
 
     /// Rebuilds the audio graph for the current default input device.
     private func reconfigure() {
+        TimingLog.shared.note("audio: device/config change → reconfigure (recording=\(isRunning))")
         if isRunning {
             // Mid-recording: reinstall the tap with the new device's format and
             // keep going. `samples` is already 16 kHz mono, so the transition is
@@ -294,9 +412,60 @@ public final class AudioCaptureEngine {
             // device's real sample rate instead of a stale one.
             engine.stop()
             engine.reset()
-            _ = engine.inputNode
-            engine.prepare()
+            guard Self.microphoneAuthorized else { return }
+            try? ObjCExceptionGuard.run {
+                _ = engine.inputNode
+                engine.prepare()
+            }
         }
+    }
+
+    // MARK: - Microphone access
+
+    private static var microphoneAuthorized: Bool {
+        AVCaptureDevice.authorizationStatus(for: .audio) == .authorized
+    }
+
+    /// Nil when capture may proceed. Otherwise an error whose description
+    /// tells the user what to do; the HUD shows it verbatim.
+    private static func microphoneAccessError() -> Error? {
+        switch AVCaptureDevice.authorizationStatus(for: .audio) {
+        case .authorized:
+            return nil
+        case .notDetermined:
+            // Shows the system prompt; the user answers it and presses the
+            // hotkey again.
+            AVCaptureDevice.requestAccess(for: .audio) { _ in }
+            return makeError(.permissionPending, "macOS is asking for microphone access. Click Allow, then try again.")
+        case .denied, .restricted:
+            return makeError(.permissionDenied, "Microphone access is off for OpenFlow. Turn it on in System Settings > Privacy & Security > Microphone.")
+        @unknown default:
+            return nil
+        }
+    }
+
+    /// The input node reported 0 Hz / 0 channels. Either nothing is connected,
+    /// or (the common case after an ad-hoc rebuild) the Microphone grant in
+    /// System Settings no longer matches this binary although it looks enabled.
+    private static func noUsableInputError() -> Error {
+        if systemHasDefaultInput() {
+            return makeError(.grantStale, "macOS is not giving OpenFlow microphone access. Allow it when asked, then try again.")
+        }
+        return makeError(.noInputDevice, "No microphone is available. Connect an input device, or check System Settings > Privacy & Security > Microphone.")
+    }
+
+    private static func systemHasDefaultInput() -> Bool {
+        var address = AudioObjectPropertyAddress(
+            mSelector: kAudioHardwarePropertyDefaultInputDevice,
+            mScope: kAudioObjectPropertyScopeGlobal,
+            mElement: kAudioObjectPropertyElementMain
+        )
+        var deviceID = AudioObjectID(kAudioObjectUnknown)
+        var size = UInt32(MemoryLayout<AudioObjectID>.size)
+        let status = AudioObjectGetPropertyData(
+            AudioObjectID(kAudioObjectSystemObject), &address, 0, nil, &size, &deviceID
+        )
+        return status == noErr && deviceID != kAudioObjectUnknown
     }
 
     private func process(_ buffer: AVAudioPCMBuffer) {
@@ -337,6 +506,9 @@ public final class AudioCaptureEngine {
             fireMaxDuration = true
         }
         lock.unlock()
+        if fireFirstBuffer {
+            TimingLog.shared.note("audio: first buffer from device (\(Int(buffer.format.sampleRate)) Hz)")
+        }
 
         DispatchQueue.main.async { [weak self] in
             guard let self else { return }

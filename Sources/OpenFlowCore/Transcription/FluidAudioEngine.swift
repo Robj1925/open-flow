@@ -43,8 +43,35 @@ public final class FluidAudioEngine: TranscriptionEngine {
             text: result.text.trimmingCharacters(in: .whitespacesAndNewlines),
             noSpeechProb: nil,
             avgLogprob: nil,
-            processingTime: Date().timeIntervalSince(started)
+            processingTime: Date().timeIntervalSince(started),
+            words: Self.words(from: result.tokenTimings)
         )
+    }
+
+    /// Groups SentencePiece tokens into words. FluidAudio renders the word
+    /// boundary marker as a leading space, so a token that starts with a
+    /// space (or follows a lone boundary token) begins a new word; everything
+    /// else, punctuation included, attaches to the word before it.
+    static func words(from timings: [TokenTiming]?) -> [TimedWord]? {
+        guard let timings, !timings.isEmpty else { return nil }
+        var words: [TimedWord] = []
+        var boundaryPending = true
+        for timing in timings {
+            let startsWord = timing.token.hasPrefix(" ") || boundaryPending
+            let text = timing.token.trimmingCharacters(in: .whitespaces)
+            if text.isEmpty {
+                boundaryPending = true
+                continue
+            }
+            boundaryPending = false
+            if startsWord || words.isEmpty {
+                words.append(TimedWord(text: text, start: timing.startTime, end: timing.endTime))
+            } else {
+                words[words.count - 1].text += text
+                words[words.count - 1].end = max(words[words.count - 1].end, timing.endTime)
+            }
+        }
+        return words.isEmpty ? nil : words
     }
 
     public func unload() {

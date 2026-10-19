@@ -15,6 +15,19 @@ public struct TranscriptionHints: Sendable {
     }
 }
 
+/// One recognized word with its position in the audio that was transcribed.
+public struct TimedWord: Sendable, Equatable {
+    public var text: String
+    public var start: TimeInterval
+    public var end: TimeInterval
+
+    public init(text: String, start: TimeInterval, end: TimeInterval) {
+        self.text = text
+        self.start = start
+        self.end = end
+    }
+}
+
 public struct EngineResult: Sendable {
     public var text: String
     /// Highest no-speech probability across segments, when the engine reports one.
@@ -22,12 +35,23 @@ public struct EngineResult: Sendable {
     /// Lowest average log-probability across segments, when reported.
     public var avgLogprob: Float?
     public var processingTime: TimeInterval
+    /// Word timings when the engine provides them (Parakeet does); joined
+    /// with spaces they equal `text`. The live preview uses the gaps between
+    /// words to find pauses where it can safely drop old audio.
+    public var words: [TimedWord]?
 
-    public init(text: String, noSpeechProb: Float? = nil, avgLogprob: Float? = nil, processingTime: TimeInterval) {
+    public init(
+        text: String,
+        noSpeechProb: Float? = nil,
+        avgLogprob: Float? = nil,
+        processingTime: TimeInterval,
+        words: [TimedWord]? = nil
+    ) {
         self.text = text
         self.noSpeechProb = noSpeechProb
         self.avgLogprob = avgLogprob
         self.processingTime = processingTime
+        self.words = words
     }
 }
 

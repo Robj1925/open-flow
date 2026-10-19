@@ -14,9 +14,17 @@ let package = Package(
         .package(url: "https://github.com/FluidInference/FluidAudio", from: "0.15.0"),
     ],
     targets: [
+        // Objective-C shim: the only way to catch NSException (AVAudioEngine
+        // raises them for format mismatches) without taking the process down.
+        .target(
+            name: "OpenFlowObjC",
+            path: "Sources/OpenFlowObjC",
+            publicHeadersPath: "include"
+        ),
         .target(
             name: "OpenFlowCore",
             dependencies: [
+                "OpenFlowObjC",
                 .product(name: "WhisperKit", package: "argmax-oss-swift"),
                 .product(name: "FluidAudio", package: "FluidAudio"),
             ],

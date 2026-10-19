@@ -20,10 +20,12 @@ Open-source, local-only voice dictation for macOS. Hold a key, speak, release �
 
 - **System-wide dictation**: works in any app — editors, browsers, chat, terminals
 - **Hold or toggle**: hold `fn` (default) and release to insert, or quick-tap to toggle hands-free; `Esc` cancels
+- **Live transcript**: words pop up on screen while you are still speaking, so you can see the dictation land before you let go. Settled words stay put; the tail still being decided is dimmed. Optionally switch the preview to the [Parakeet Unified](https://huggingface.co/FluidInference/parakeet-unified-en-0.6b-coreml) streaming model (English, about 610 MB, Settings > Models) and words appear about a third of a second after you say them. Toggle in Settings.
 - **Two local engines**, switchable in Settings:
   - **Parakeet TDT v3** (default): the fastest engine, best English accuracy, and it also covers 24 European languages. Via [FluidAudio](https://github.com/FluidInference/FluidAudio).
   - **Whisper Large v3 Turbo**: the broad multilingual fallback, roughly 100 languages including Chinese, Japanese, Korean, Arabic, and Hindi. Via [WhisperKit](https://github.com/argmaxinc/argmax-oss-swift).
   - **Other languages**: Parakeet handles English and 24 European languages automatically. For anything outside that set (Chinese, Japanese, Korean, Arabic, Hindi, and the rest), switch to Whisper Large v3 Turbo in the Models tab, then set your language in Settings. OpenFlow dictates one selected language at a time (no auto-detect yet).
+- **Read Aloud**: select text in any app and press `⌃⌥R` (works everywhere, configurable), or right-click and choose **Read Aloud with OpenFlow** (native apps and Chrome; Electron apps do not show Services). Speech starts after the first sentence and `Esc` stops it. Uses the [Kokoro](https://huggingface.co/hexgrad/Kokoro-82M) 82M voice (Apache 2.0, English) on the Neural Engine via FluidAudio; about 330 MB, downloaded on first use.
 - **Custom dictionary & snippets**: teach it "cube cuddle" → `kubectl`, or expand spoken triggers into whole blocks
 - **Hallucination filtering**: silence never injects "Thank you." into your editor
 - **Local history**: searchable transcript log in SQLite, on your disk only
@@ -47,6 +49,7 @@ Open-source, local-only voice dictation for macOS. Hold a key, speak, release �
 
 - Apple Silicon Mac, macOS 14+ (macOS 26+ for the Apple Intelligence cleanup pass)
 - ~600 MB disk per model (downloaded on first run, cached locally)
+- Optional: about 610 MB more for the streaming live preview model (English only)
 - No Xcode required to build — Command Line Tools are enough
 
 ## Install (download)
@@ -76,6 +79,8 @@ Onboarding then walks you through Microphone + Accessibility permissions and the
 
 ```sh
 make run        # builds release, assembles dist/OpenFlow.app, opens it
+make install    # builds, quits the running app, replaces /Applications/OpenFlow.app, relaunches
+make release    # builds and zips dist/OpenFlow.zip for a GitHub release
 make build      # debug build
 make test       # runs the Swift Testing suite (swift run openflow-tests)
 make cli        # builds the openflow-cli spike tool
@@ -89,7 +94,7 @@ On first launch, onboarding walks through the required permissions:
 | Accessibility | watch for the global hotkey and paste text into the focused app |
 | Input Monitoring | only if macOS refuses the event tap with Accessibility alone |
 
-> **Ad-hoc signing note:** without a Developer ID, macOS ties permission grants to the binary's signature — after rebuilding you may need to re-grant Accessibility (toggle OpenFlow off/on in System Settings). Set `CODESIGN_ID="Developer ID Application: …"` when running `make app` if you have a signing identity.
+> **Ad-hoc signing note:** without a Developer ID the app is ad hoc signed. `make app` pins the signature's designated requirement to the bundle identifier, so the Microphone and Accessibility grants survive rebuilds. If macOS does hold on to a grant from an older copy, setup clears it and asks again. Set `CODESIGN_ID="Developer ID Application: …"` when running `make app` if you have a signing identity.
 
 <p align="center">
   <img src="docs/images/accessibility-permission.png" alt="System Settings, Privacy and Security, Accessibility, with OpenFlow enabled" width="460">
@@ -108,6 +113,9 @@ openflow-cli models                  # list model presets and download state
 openflow-cli record 8                # record 8s from the mic, transcribe with Parakeet
 openflow-cli compare 8               # record once, run BOTH engines head-to-head
 openflow-cli file speech.wav both    # transcribe an audio file with both engines
+openflow-cli speak "Hello there" --play --out hello.wav   # Kokoro TTS: per-sentence latency, WAV, playback
+openflow-cli live hello.wav          # replay a file as a live recording and print the partial transcripts
+openflow-cli live-stream hello.wav 320   # same, through the Parakeet Unified streaming preview (downloads that tier once)
 ```
 
 ## Architecture
