@@ -20,6 +20,40 @@
 <meta name="twitter:description" content="Free, open-source, on-device voice dictation for macOS. No cloud, no subscription.">
 <meta name="twitter:image" content="https://robj1925.github.io/open-flow/images/og-card.png">
 
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "OpenFlow",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "macOS 14 or later (Apple Silicon)",
+  "softwareVersion": "0.3.0",
+  "url": "https://robj1925.github.io/open-flow/",
+  "downloadUrl": "https://github.com/Robj1925/open-flow/releases/latest/download/OpenFlow.zip",
+  "image": "https://robj1925.github.io/open-flow/images/og-card.png",
+  "description": "Free, open source voice dictation for macOS. Hold a key, speak, release, and the words land at your cursor. Transcription, the live transcript, and Read Aloud all run on device.",
+  "license": "https://github.com/Robj1925/open-flow/blob/main/LICENSE",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "author": {
+    "@type": "Person",
+    "name": "Robby J",
+    "url": "https://automatewithrobby.fyi/"
+  },
+  "featureList": [
+    "On-device transcription with Parakeet TDT v3 or Whisper Large v3 Turbo",
+    "Live transcript while you speak, with an optional 320 ms streaming model",
+    "Read Aloud for selected text with the Kokoro voice",
+    "Optional Apple Intelligence cleanup of filler words",
+    "Custom dictionary and searchable local history",
+    "Works in any app and any text field"
+  ]
+}
+</script>
+
 <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
@@ -158,6 +192,10 @@
     background:oklch(0.2 0.025 274 / .5);
   }
   .hero .pill .dot{ width:7px; height:7px; border-radius:50%; background:var(--teal); box-shadow:0 0 10px var(--teal); }
+  .hero .pill .dot.new{ background:var(--azure); box-shadow:0 0 10px var(--azure); }
+  .hero-pills{ display:flex; gap:.6rem; justify-content:center; flex-wrap:wrap; }
+  .hero a.pill{ text-decoration:none; transition:border-color .2s var(--ease), background .2s var(--ease); }
+  .hero a.pill:hover{ border-color:var(--border-lit); background:oklch(0.24 0.028 274 / .75); }
   h1.hero-title{
     font-size:var(--step-4);
     letter-spacing:-0.035em;
@@ -314,9 +352,12 @@
 <main id="top">
   <!-- HERO -->
   <section class="hero wrap">
-    <span class="pill"><span class="dot"></span> Runs 100% on your Mac</span>
+    <div class="hero-pills">
+      <span class="pill"><span class="dot"></span> Runs 100% on your Mac</span>
+      <a class="pill" href="https://github.com/Robj1925/open-flow/releases/tag/v0.3.0"><span class="dot new"></span> New in 0.3.0: live transcript and Read Aloud</a>
+    </div>
     <h1 class="hero-title">Talk. Your Mac types.</h1>
-    <p class="hero-sub">OpenFlow turns speech into text anywhere on macOS. Hold a key, talk, release, and your words land right where your cursor is. Everything runs on device, so your voice never leaves your machine.</p>
+    <p class="hero-sub">OpenFlow turns speech into text anywhere on macOS. Hold a key, talk, and watch your words appear as you speak. Release, and they land right where your cursor is. Everything runs on device, so your voice never leaves your machine.</p>
     <div class="hero-cta">
       <a class="btn btn-primary" href="https://github.com/Robj1925/open-flow/releases/latest/download/OpenFlow.zip">
         <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3v10.6l3.3-3.3 1.4 1.4L12 17.4 6.3 11.7l1.4-1.4L11 13.6V3h1zM5 19h14v2H5z"/></svg>
@@ -370,7 +411,7 @@
   <section class="band wrap" id="features">
     <div class="section-head">
       <h2>Everything you need to stop typing.</h2>
-      <p>Two on-device speech engines, an optional cleanup pass, and the small touches that make dictation feel effortless.</p>
+      <p>Two on-device speech engines, a live transcript, an optional cleanup pass, and the small touches that make dictation feel effortless.</p>
     </div>
     <div class="bento">
       <div class="card col-3" data-reveal>
@@ -396,11 +437,15 @@
         <span class="kicker">Live transcript</span>
         <h3>See the words land while you speak.</h3>
         <p>Words appear on screen as you talk, and what has settled is never rewritten. Turn on the optional streaming model and they show up about a third of a second after you say them.</p>
+        <div class="engine-row">
+          <span class="chip"><b>Standard</b> ~1 s, all languages</span>
+          <span class="chip"><b>Streaming</b> ~0.3 s, English</span>
+        </div>
       </div>
       <div class="card col-3" data-reveal>
         <span class="kicker">Read Aloud</span>
         <h3>Select text, hear it read.</h3>
-        <p>Press <kbd>&#8963;&#8997;R</kbd> on any selected text and the Kokoro voice reads it on the Neural Engine, starting after the first sentence. <kbd>Esc</kbd> stops it.</p>
+        <p>Press <kbd>&#8963;&#8997;R</kbd> on any selected text, or right-click and choose <b>Read Aloud with OpenFlow</b>. The Kokoro voice reads it on the Neural Engine, starting after the first sentence. <kbd>Esc</kbd> stops it.</p>
       </div>
       <div class="card col-2" data-reveal>
         <span class="kicker">Custom dictionary</span>
@@ -431,11 +476,11 @@
       <div class="steps">
         <div class="step" data-reveal>
           <h3>Hold the key</h3>
-          <p>Press and hold <kbd>fn</kbd> (or any hotkey you pick). A quiet tone tells you the mic is live.</p>
+          <p>Press and hold <kbd>fn</kbd> (or any hotkey you pick). A quiet tone and a red dot tell you the mic is live.</p>
         </div>
         <div class="step" data-reveal>
           <h3>Say it</h3>
-          <p>Talk naturally. A floating meter shows OpenFlow is listening, without stealing focus from your work.</p>
+          <p>Talk naturally. Your words appear in a floating panel as you speak, without stealing focus from your work.</p>
         </div>
         <div class="step" data-reveal>
           <h3>Release</h3>
@@ -526,7 +571,7 @@
       </a>
       <a class="btn btn-ghost" href="https://github.com/Robj1925/open-flow">View the source</a>
     </div>
-    <p class="install" data-reveal>Requires Apple Silicon and macOS 14 or later. This build isn't notarized by Apple yet, so on first launch, right-click the app and choose <b>Open</b>. Model download is about 600 MB, one time.</p>
+    <p class="install" data-reveal>Requires Apple Silicon and macOS 14 or later. This build isn't notarized by Apple yet, so on first launch, right-click the app and choose <b>Open</b>. Model download is about 600 MB, one time. The streaming preview (610 MB) and the Read Aloud voice (330 MB) are optional extras, downloaded only when you turn them on.</p>
   </section>
 </main>
 
